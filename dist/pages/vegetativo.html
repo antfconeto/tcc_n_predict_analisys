@@ -1,0 +1,103 @@
+<div class="kicker">Altura e massa</div>
+<h1 class="title">A foto estima altura e biomassa?</h1>
+<p class="standfirst">
+  Em 26/05, além da foto e do Falker, cada uma das 12 parcelas teve a altura medida e a forragem cortada e pesada.
+  Aqui os 117 índices da foto são comparados diretamente com essas medidas, e uma rede neural é ajustada para
+  prever cada uma delas.
+</p>
+
+<div class="facts" id="vg-facts"></div>
+
+<section class="part">
+  <h2>Como foi feito</h2>
+  <div class="prose">
+    <p>
+      Para cada variável de campo, cada índice × estatística (e a cobertura vegetal da foto) foi comparado com o valor
+      da parcela. Como na página <a href="#/coletas">Coletas</a>, o número principal é o <strong>R² de validação</strong>:
+      cada parcela é prevista por uma reta ajustada nas outras 11. O q corrige o p-valor pelos 118 testes.
+      Como referência, as mesmas retas foram ajustadas com o SPAD medido pelo Falker, com o SPAD previsto pela foto
+      e com a dose de N.
+    </p>
+  </div>
+  <div id="vg-summary"></div>
+</section>
+
+<section class="part">
+  <h2>Índices × cada variável</h2>
+  <div class="options" id="vg-target"></div>
+  <p class="prose" id="vg-text" style="margin-top:16px"></p>
+
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title" id="vg-rank-title">Os 15 índices que melhor acompanham a variável</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="vg-rank">ver dados</button></div></div>
+    <div class="chart" id="vg-rank"></div>
+    <figcaption class="interp">
+      Barra = R² de validação (cada parcela prevista pelas outras 11). Em laranja, as referências: SPAD medido,
+      SPAD previsto pela foto, dose de N e cobertura vegetal. Barras à esquerda de zero: pior que usar a média.
+    </figcaption>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Índice × valor medido, parcela por parcela</div></div>
+      <div class="fig-tools"><label class="small muted">Variável <select id="vg-var"></select></label></div></div>
+    <div class="chart" id="vg-scatter"></div>
+    <figcaption class="interp" id="vg-scatter-text"></figcaption>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>Rede neural</h2>
+  <div class="prose">
+    <p>
+      Para altura, massa de folha e massa total foram testadas <span id="vg-n-configs">–</span> redes: 1 a 8 neurônios,
+      ReLU ou tanh, cinco níveis de regularização e sete conjuntos de entrada (as 24 entradas do modelo de clorofila,
+      os 1, 2, 4 ou 8 índices de maior correlação, com ou sem a cobertura). Os índices são escolhidos só com as parcelas
+      de treino.
+    </p>
+    <p>
+      Com 12 parcelas e 350 tentativas, a melhor rede sempre parece boa, mesmo que parte disso seja sorte. Por isso há
+      dois números. O <strong>melhor da busca</strong> é o R² de validação da rede vencedora: otimista. O
+      <strong>aninhado</strong> repete a busca inteira sem a parcela testada, escolhe a vencedora só com as outras 11 e
+      então prevê a parcela. É o que se espera em parcelas novas.
+    </p>
+  </div>
+  <div class="options" id="vg-mtarget"></div>
+
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title" id="vg-models-title">R² de validação por abordagem</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="vg-models">ver dados</button></div></div>
+    <div class="chart" id="vg-models"></div>
+    <figcaption class="interp" id="vg-models-text"></figcaption>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Medido × previsto (rede aninhada e reta no melhor índice)</div></div>
+      <div class="fig-tools"><label class="small muted">Previsão <select id="vg-pred-kind">
+        <option value="MLP_aninhada">rede neural (aninhada)</option>
+        <option value="Reta_melhor_indice">reta no melhor índice</option>
+        <option value="MLP_busca">rede neural (melhor da busca)</option>
+        <option value="Ridge">Ridge (24 entradas)</option>
+      </select></label></div></div>
+    <div class="chart" id="vg-pred"></div>
+    <figcaption class="interp">Cor mais escura = dose maior. Pontos sobre a diagonal são acertos. Clique num ponto para abrir a parcela.</figcaption>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Tabela</div><div class="fig-title">As 10 melhores redes da busca (LOO simples)</div></div></div>
+    <div id="vg-search"></div>
+    <figcaption class="interp">Todas as configurações estão na tabela <code>veg_mlp_search</code> (página Dados).</figcaption>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>Limites</h2>
+  <div class="prose">
+    <p>
+      É uma única data e 12 parcelas, com a dose variando junto com tudo. Um índice que acompanha a biomassa aqui pode
+      estar medindo a dose (mais N, planta maior e mais verde) e não a biomassa em si. Para usar no app, a relação
+      precisa ser confirmada em outra coleta, idealmente com cortes em mais datas.
+    </p>
+  </div>
+</section>
+
+<p class="next-link"><small>Próximo</small><a href="#/outliers">Os casos fora do padrão →</a></p>

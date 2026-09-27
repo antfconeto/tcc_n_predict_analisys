@@ -1,0 +1,1 @@
+{"table":"legacy__lodo_ml_summary","columns":["run_id","Calibration","LODO_R2_mean","LODO_R2_std","LODO_RMSE_mean","LODO_MAE_mean","LODO_R2_pooled","Meets_Target_0_75"],"rows":[[2,"blind",-2.07779,3.01536,4.31782,3.96881,0.178396,0],[2,"lopo",0.737306,0.212396,1.54906,1.29981,0.743021,0],[2,"anchor",0.818411,0.156126,1.25253,1.03015,0.818707,1]],"has_run":true}

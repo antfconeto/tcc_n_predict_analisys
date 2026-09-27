@@ -1,0 +1,38 @@
+<div class="kicker">Outliers</div>
+<h1 class="title">Os casos fora do padrão e por que aconteceram</h1>
+<p class="standfirst">
+  Cada caso abaixo foi marcado por uma regra fixa, calculada no banco. A justificativa não é escrita à mão:
+  ela vem dos diagnósticos daquela foto e daquela parcela (dispersão das leituras, cobertura vegetal,
+  resolução da foto, viés da data, faixa de SPAD).
+</p>
+
+<section class="part">
+  <h2>Critérios</h2>
+  <div class="table-wrap rules"><table class="data">
+    <thead><tr><th>Tipo</th><th>Regra</th><th>O que indica</th></tr></thead>
+    <tbody>
+      <tr><td>Erro do modelo</td><td>|previsto − medido| &gt; 1,5 × RMSE (<span id="rule-res">–</span> SPAD)</td><td>foto que a rede neural não soube ler</td></tr>
+      <tr><td>Erro do app</td><td>|previsto − medido| &gt; 2,5 SPAD</td><td>mesmo critério da validação original do app</td></tr>
+      <tr><td>Referência instável</td><td>coeficiente de variação das leituras &gt; 12%</td><td>a média Falker da parcela é pouco confiável</td></tr>
+      <tr><td>Leitura isolada</td><td>z robusto (mediana/MAD) &gt; 3,5 dentro da parcela</td><td>uma folha muito diferente das demais</td></tr>
+      <tr><td>Qualidade da foto</td><td>blocos de vegetação &lt; 25% da mediana da data</td><td>foto com pouca informação</td></tr>
+      <tr><td>Altura × clorofila</td><td>resíduo padronizado &gt; 1,8</td><td>crescimento que a cor não explica</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="part">
+  <h2>Onde eles aparecem</h2>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Erro de cada foto (rede neural), com os outliers rotulados</div></div></div>
+    <div class="chart" id="o-res"></div>
+    <figcaption class="interp">
+      O traço é o viés médio de cada data. Os casos marcados se concentram em duas situações: 21/05, em que o
+      modelo subestima as parcelas em geral, e a área de teste de 01/06, superestimada. Clique num ponto para
+      abrir a parcela.
+    </figcaption>
+  </figure>
+</section>
+
+<div class="options" id="o-filter" style="margin-top:48px"></div>
+<div id="o-list"></div>

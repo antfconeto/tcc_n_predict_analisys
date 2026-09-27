@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clorofila por Imagem</title>
+<meta name="description" content="Predição de clorofila (SPAD) em capim Marandu a partir de fotos RGB: dados de campo, análise, outliers e imagens, consultados ao vivo no banco local.">
+<link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="site-title" href="#/">Clorofila por imagem<span>TCC · capim Marandu</span></a>
+    <nav class="nav" id="nav" aria-label="Seções"></nav>
+    <button type="button" class="theme" id="theme">Tema</button>
+  </div>
+</header>
+
+<main id="view" tabindex="-1"><p class="muted">Carregando…</p></main>
+
+<footer class="colophon"><div>
+  <span>Dados consultados no banco local <code>database/tcc.sqlite</code> no momento em que a página abre.</span>
+  <span id="stamp"></span>
+</div></footer>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+  <div class="lb-bar"><span id="lb-title"></span><div class="opts" id="lb-opts"></div><button type="button" id="lb-close">Fechar ✕</button></div>
+  <div class="lb-body"><img id="lb-img" alt=""></div>
+  <div class="lb-caption" id="lb-caption"></div>
+</div>
+<div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+<script>window.TCC_STATIC = true; window.TCC_STATIC_PHOTOS = false;</script>
+<script src="static/app.js"></script>
+<script src="static/pages.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"table":"legacy__reg_sym_fixed_split_regression","columns":["run_id","R2","RMSE","MAE","Model"],"rows":[[2,-0.130482,4.05214,3.15762,"Ridge_AllIndices"],[2,-0.142023,4.07277,3.24715,"RandomForest_Reg"]],"has_run":true}

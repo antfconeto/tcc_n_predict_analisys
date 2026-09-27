@@ -1,0 +1,83 @@
+<div class="kicker">Coletas</div>
+<h1 class="title">Cada coleta analisada sozinha</h1>
+<p class="standfirst">
+  Dentro de uma mesma coleta, todas as parcelas foram fotografadas na mesma hora, com a mesma luz e a mesma
+  câmera. Aqui cada data é analisada isoladamente, sem comparar datas entre si: quais índices da foto
+  acompanham o SPAD medido naquele dia?
+</p>
+
+<div class="facts">
+  <div><div class="n"><span data-k="pd_18_05_loo" data-fmt="2">–</span></div><div class="l">melhor R² em 18/05 (<span data-k="pd_18_05_n">–</span> parcelas com foto)</div></div>
+  <div><div class="n"><span data-k="pd_21_05_loo" data-fmt="2">–</span></div><div class="l">melhor R² em 21/05 (<span data-k="pd_21_05_n">–</span> parcelas)</div></div>
+  <div><div class="n"><span data-k="pd_26_05_loo" data-fmt="2">–</span></div><div class="l">melhor R² em 26/05 (<span data-k="pd_26_05_n">–</span> parcelas)</div></div>
+  <div><div class="n"><span data-k="best_r2" data-fmt="2">–</span></div><div class="l">R² prevendo uma data nova (para comparação)</div></div>
+</div>
+
+<section class="part">
+  <h2>Como foi feito</h2>
+  <div class="prose">
+    <p>
+      Para cada data, cada um dos 117 índices × estatísticas (mediana, média, P75, P90 dos blocos de vegetação,
+      já com a máscara de sombra e reflexo) foi comparado com a média Falker da parcela. Com 7 a 12 parcelas por
+      data, uma correlação alta pode aparecer por acaso. Por isso o número principal é o
+      <strong>R² de validação dentro da data</strong>: cada parcela é prevista por uma reta ajustada nas outras
+      parcelas do mesmo dia. O valor q (Benjamini-Hochberg) corrige o p-valor pelo número de índices testados.
+    </p>
+    <p>
+      01/06 tem só 3 pontos de teste: os valores aparecem, mas não permitem conclusão.
+    </p>
+  </div>
+  <div id="pd-summary"></div>
+</section>
+
+<section class="part">
+  <h2>Por data</h2>
+  <div class="options" id="pd-date"></div>
+  <p class="prose" id="pd-text" style="margin-top:16px"></p>
+
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title" id="pd-rank-title">Os 15 índices que melhor acompanham o SPAD nesta data</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="pd-rank">ver dados</button></div></div>
+    <div class="chart" id="pd-rank"></div>
+    <figcaption class="interp">
+      Barra = R² de validação dentro da data (cada parcela prevista pelas demais). O nome é
+      <code>estatística_índice</code>: por exemplo, <code>P75_b_over_r</code> é o percentil 75 da razão azul/vermelho
+      entre os blocos de vegetação da foto.
+    </figcaption>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Índice × SPAD medido, parcela por parcela</div></div>
+      <div class="fig-tools"><label class="small muted">Índice <select id="pd-var"></select></label></div></div>
+    <div class="chart" id="pd-scatter"></div>
+    <figcaption class="interp" id="pd-scatter-text">Cor mais escura = dose maior. Clique num ponto para abrir a parcela.</figcaption>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Tabela</div><div class="fig-title">A foto separa as doses nesta data? (ANOVA em blocos)</div></div></div>
+    <div id="pd-anova"></div>
+    <figcaption class="interp" id="pd-anova-text"></figcaption>
+  </figure>
+
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Tabela</div><div class="fig-title">Todos os índices nesta data</div></div></div>
+    <div id="pd-table"></div>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>Os mesmos índices funcionam em todas as datas?</h2>
+  <div class="prose"><p>
+    Correlação de cada índice com o SPAD dentro de cada data. Os primeiros são os de maior R² mínimo nas três
+    coletas, ou seja, os que se mantêm bons mesmo na pior data. Célula mais escura = correlação mais forte
+    (o número mostra o sinal).
+  </p></div>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Correlação com o SPAD em cada coleta: 20 índices mais consistentes</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="pd-cons">ver dados</button></div></div>
+    <div class="chart" id="pd-cons"></div>
+    <figcaption class="interp" id="pd-cons-text"></figcaption>
+  </figure>
+</section>
+
+<p class="next-link"><small>Próximo</small><a href="#/analise">A análise completa, em figuras →</a></p>

@@ -1,0 +1,1 @@
+{"table":"legacy__symbolic_class_edges_global","columns":["run_id","Classe","Label","Chl_min_Falker","Chl_max_Falker"],"rows":[[2,0,"Muito baixa",null,33.8657],[2,1,"Baixa",33.8657,36.5457],[2,2,"Média",36.5457,39.6914],[2,3,"Alta",39.6914,41.1829],[2,4,"Muito alta",41.1829,null]],"has_run":true}

@@ -1,0 +1,1 @@
+{"table":"legacy__reg_sym_class_edges_train_only","columns":["run_id","Classe","Label","Chl_min_Falker","Chl_max_Falker"],"rows":[[2,0,"Muito baixa",null,35.54],[2,1,"Baixa",35.54,39.28],[2,2,"Média",39.28,40.4743],[2,3,"Alta",40.4743,42.5886],[2,4,"Muito alta",42.5886,null]],"has_run":true}

@@ -1,0 +1,55 @@
+# Publica o site estático (dist/) no GitHub Pages.
+#
+# O banco (database/tcc.sqlite), os gráficos (outputs/) e as fotos ficam fora do repositório, então o site é
+# gerado localmente e a pasta dist/ vai no commit:
+#
+#   python run.py build          # gera dist/ (~14 MB; --with-images inclui as fotos, ~170 MB)
+#   git add dist && git commit -m "Atualiza o site" && git push
+#
+# Uma vez só: Settings → Pages → Build and deployment → Source: "GitHub Actions".
+name: Deploy do site (GitHub Pages)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "dist/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conferir o site estático
+        run: |
+          if [ ! -f dist/index.html ] || [ ! -f dist/data/meta.json ]; then
+            echo "::error::dist/ não encontrado ou incompleto. Rode 'python run.py build' e faça commit de dist/."
+            exit 1
+          fi
+          grep -q "window.TCC_STATIC = true" dist/index.html || { echo "::error::dist/index.html não é a versão estática"; exit 1; }
+          echo "Gerado em: $(cat dist/data/meta.json)"
+          du -sh dist
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

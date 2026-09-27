@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+
+# Gerados localmente (recriados com `python run.py setup` + `python run.py all`)
+database/*.sqlite
+outputs/
+
+# Imagens de campo (~200 MB) ficam fora do repositório; ver TCC_IMAGE_ROOT
+data/image/
+
+# dist/ (site estático de `python run.py build`) vai no commit: é o que o GitHub Pages publica

@@ -1,0 +1,762 @@
+{
+  "dataset": "nutrinitro_validation_cropped",
+  "generated_at": "2026-06-06T23:42:56.876484+00:00",
+  "crop_fraction": 0.2,
+  "pipeline_note": "Imagens pré-recortadas (20% bordas). O app Nutrinitro NÃO aplica crop; use estas fotos como entrada para equivaler ao treino TCC.",
+  "analysis_recommendation": {
+    "crop": "Capim Marandu",
+    "analysis_type": "nitrogen_mlp",
+    "block_size": 10
+  },
+  "image_count": 34,
+  "images": [
+    {
+      "id": "01-06_P01",
+      "source_file": "data/image/01-06/p1.jpg",
+      "cropped_file": "data/export_app_validation/cropped/01-06/01-06_P01.jpg",
+      "date_folder": "01-06",
+      "date_key": "01-06-2026",
+      "ponto": 1,
+      "bloco": "Bloco 1",
+      "tratamento": "T3",
+      "dose_kg_ha": 75,
+      "falker_spad_reference": 31.825000000000006,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 5472,
+        "height": 3648
+      },
+      "cropped_size": {
+        "width": 3283,
+        "height": 2189
+      },
+      "suggested_app_title": "Validação 01-06 P1"
+    },
+    {
+      "id": "01-06_P02",
+      "source_file": "data/image/01-06/p2.jpg",
+      "cropped_file": "data/export_app_validation/cropped/01-06/01-06_P02.jpg",
+      "date_folder": "01-06",
+      "date_key": "01-06-2026",
+      "ponto": 2,
+      "bloco": "Bloco 1",
+      "tratamento": "T2",
+      "dose_kg_ha": 50,
+      "falker_spad_reference": 29.79,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2921,
+        "height": 3133
+      },
+      "cropped_size": {
+        "width": 1752,
+        "height": 1880
+      },
+      "suggested_app_title": "Validação 01-06 P2"
+    },
+    {
+      "id": "01-06_P03",
+      "source_file": "data/image/01-06/p3.jpg",
+      "cropped_file": "data/export_app_validation/cropped/01-06/01-06_P03.jpg",
+      "date_folder": "01-06",
+      "date_key": "01-06-2026",
+      "ponto": 3,
+      "bloco": "Bloco 1",
+      "tratamento": "T4",
+      "dose_kg_ha": 100,
+      "falker_spad_reference": 36.035000000000004,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2086,
+        "height": 2654
+      },
+      "cropped_size": {
+        "width": 1251,
+        "height": 1593
+      },
+      "suggested_app_title": "Validação 01-06 P3"
+    },
+    {
+      "id": "18-05_P01",
+      "source_file": "data/image/18-05/P1(1).jpg",
+      "cropped_file": "data/export_app_validation/cropped/18-05/18-05_P01.jpg",
+      "date_folder": "18-05",
+      "date_key": "18-05-2026",
+      "ponto": 1,
+      "bloco": "Bloco 1",
+      "tratamento": "T3",
+      "dose_kg_ha": 75,
+      "falker_spad_reference": 41.2,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2394,
+        "height": 2825
+      },
+      "cropped_size": {
+        "width": 1437,
+        "height": 1695
+      },
+      "suggested_app_title": "Validação 18-05 P1"
+    },
+    {
+      "id": "18-05_P02",
+      "source_file": "data/image/18-05/P2(1).jpg",
+      "cropped_file": "data/export_app_validation/cropped/18-05/18-05_P02.jpg",
+      "date_folder": "18-05",
+      "date_key": "18-05-2026",
+      "ponto": 2,
+      "bloco": "Bloco 1",
+      "tratamento": "T2",
+      "dose_kg_ha": 50,
+      "falker_spad_reference": 39.82857142857143,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2175,
+        "height": 2674
+      },
+      "cropped_size": {
+        "width": 1305,
+        "height": 1605
+      },
+      "suggested_app_title": "Validação 18-05 P2"
+    },
+    {
+      "id": "18-05_P03",
+      "source_file": "data/image/18-05/P3(1).jpg",
+      "cropped_file": "data/export_app_validation/cropped/18-05/18-05_P03.jpg",
+      "date_folder": "18-05",
+      "date_key": "18-05-2026",
+      "ponto": 3,
+      "bloco": "Bloco 1",
+      "tratamento": "T4",
+      "dose_kg_ha": 100,
+      "falker_spad_reference": 44.34285714285714,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 1963,
+        "height": 2449
+      },
+      "cropped_size": {
+        "width": 1178,
+        "height": 1470
+      },
+      "suggested_app_title": "Validação 18-05 P3"
+    },
+    {
+      "id": "18-05_P05",
+      "source_file": "data/image/18-05/P5(1).jpg",
+      "cropped_file": "data/export_app_validation/cropped/18-05/18-05_P05.jpg",
+      "date_folder": "18-05",
+      "date_key": "18-05-2026",
+      "ponto": 5,
+      "bloco": "Bloco 2",
+      "tratamento": "T4",
+      "dose_kg_ha": 100,
+      "falker_spad_reference": 43.58571428571428,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2216,
+        "height": 2750
+      },
+      "cropped_size": {
+        "width": 1329,
+        "height": 1650
+      },
+      "suggested_app_title": "Validação 18-05 P5"
+    },
+    {
+      "id": "18-05_P07",
+      "source_file": "data/image/18-05/P7(1).jpg",
+      "cropped_file": "data/export_app_validation/cropped/18-05/18-05_P07.jpg",
+      "date_folder": "18-05",
+      "date_key": "18-05-2026",
+      "ponto": 7,
+      "bloco": "Bloco 2",
+      "tratamento": "T1",
+      "dose_kg_ha": 0,
+      "falker_spad_reference": 36.9,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 1922,
+        "height": 2456
+      },
+      "cropped_size": {
+        "width": 1153,
+        "height": 1473
+      },
+      "suggested_app_title": "Validação 18-05 P7"
+    },
+    {
+      "id": "18-05_P10",
+      "source_file": "data/image/18-05/P10(1).jpg",
+      "cropped_file": "data/export_app_validation/cropped/18-05/18-05_P10.jpg",
+      "date_folder": "18-05",
+      "date_key": "18-05-2026",
+      "ponto": 10,
+      "bloco": "Bloco 3",
+      "tratamento": "T4",
+      "dose_kg_ha": 100,
+      "falker_spad_reference": 42.114285714285714,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2066,
+        "height": 2353
+      },
+      "cropped_size": {
+        "width": 1239,
+        "height": 1412
+      },
+      "suggested_app_title": "Validação 18-05 P10"
+    },
+    {
+      "id": "18-05_P11",
+      "source_file": "data/image/18-05/P11(1).jpg",
+      "cropped_file": "data/export_app_validation/cropped/18-05/18-05_P11.jpg",
+      "date_folder": "18-05",
+      "date_key": "18-05-2026",
+      "ponto": 11,
+      "bloco": "Bloco 3",
+      "tratamento": "T3",
+      "dose_kg_ha": 75,
+      "falker_spad_reference": 40.58571428571428,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 1833,
+        "height": 2442
+      },
+      "cropped_size": {
+        "width": 1100,
+        "height": 1465
+      },
+      "suggested_app_title": "Validação 18-05 P11"
+    },
+    {
+      "id": "21-05_P01",
+      "source_file": "data/image/21-05/P1.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P01.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 1,
+      "bloco": "Bloco 1",
+      "tratamento": "T3",
+      "dose_kg_ha": 75,
+      "falker_spad_reference": 39.142857142857146,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2599,
+        "height": 3153
+      },
+      "cropped_size": {
+        "width": 1560,
+        "height": 1892
+      },
+      "suggested_app_title": "Validação 21-05 P1"
+    },
+    {
+      "id": "21-05_P02",
+      "source_file": "data/image/21-05/P2.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P02.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 2,
+      "bloco": "Bloco 1",
+      "tratamento": "T2",
+      "dose_kg_ha": 50,
+      "falker_spad_reference": 36.24285714285714,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2469,
+        "height": 2668
+      },
+      "cropped_size": {
+        "width": 1482,
+        "height": 1601
+      },
+      "suggested_app_title": "Validação 21-05 P2"
+    },
+    {
+      "id": "21-05_P03",
+      "source_file": "data/image/21-05/P3.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P03.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 3,
+      "bloco": "Bloco 1",
+      "tratamento": "T4",
+      "dose_kg_ha": 100,
+      "falker_spad_reference": 43.3,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2161,
+        "height": 2640
+      },
+      "cropped_size": {
+        "width": 1296,
+        "height": 1584
+      },
+      "suggested_app_title": "Validação 21-05 P3"
+    },
+    {
+      "id": "21-05_P04",
+      "source_file": "data/image/21-05/P4.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P04.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 4,
+      "bloco": "Bloco 1",
+      "tratamento": "T1",
+      "dose_kg_ha": 0,
+      "falker_spad_reference": 34.42857142857142,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2196,
+        "height": 2654
+      },
+      "cropped_size": {
+        "width": 1317,
+        "height": 1593
+      },
+      "suggested_app_title": "Validação 21-05 P4"
+    },
+    {
+      "id": "21-05_P05",
+      "source_file": "data/image/21-05/P5.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P05.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 5,
+      "bloco": "Bloco 2",
+      "tratamento": "T4",
+      "dose_kg_ha": 100,
+      "falker_spad_reference": 45.857142857142854,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2168,
+        "height": 3062
+      },
+      "cropped_size": {
+        "width": 1301,
+        "height": 1837
+      },
+      "suggested_app_title": "Validação 21-05 P5"
+    },
+    {
+      "id": "21-05_P06",
+      "source_file": "data/image/21-05/P6.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P06.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 6,
+      "bloco": "Bloco 2",
+      "tratamento": "T3",
+      "dose_kg_ha": 75,
+      "falker_spad_reference": 41.21428571428572,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2161,
+        "height": 2638
+      },
+      "cropped_size": {
+        "width": 1296,
+        "height": 1583
+      },
+      "suggested_app_title": "Validação 21-05 P6"
+    },
+    {
+      "id": "21-05_P07",
+      "source_file": "data/image/21-05/P7.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P07.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 7,
+      "bloco": "Bloco 2",
+      "tratamento": "T1",
+      "dose_kg_ha": 0,
+      "falker_spad_reference": 34.48571428571429,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 1963,
+        "height": 2460
+      },
+      "cropped_size": {
+        "width": 1178,
+        "height": 1476
+      },
+      "suggested_app_title": "Validação 21-05 P7"
+    },
+    {
+      "id": "21-05_P08",
+      "source_file": "data/image/21-05/P8.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P08.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 8,
+      "bloco": "Bloco 2",
+      "tratamento": "T2",
+      "dose_kg_ha": 50,
+      "falker_spad_reference": 34.18571428571429,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 1943,
+        "height": 2672
+      },
+      "cropped_size": {
+        "width": 1166,
+        "height": 1603
+      },
+      "suggested_app_title": "Validação 21-05 P8"
+    },
+    {
+      "id": "21-05_P09",
+      "source_file": "data/image/21-05/P9.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P09.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 9,
+      "bloco": "Bloco 3",
+      "tratamento": "T2",
+      "dose_kg_ha": 50,
+      "falker_spad_reference": 39.942857142857136,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2264,
+        "height": 2804
+      },
+      "cropped_size": {
+        "width": 1359,
+        "height": 1683
+      },
+      "suggested_app_title": "Validação 21-05 P9"
+    },
+    {
+      "id": "21-05_P10",
+      "source_file": "data/image/21-05/P10.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P10.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 10,
+      "bloco": "Bloco 3",
+      "tratamento": "T4",
+      "dose_kg_ha": 100,
+      "falker_spad_reference": 40.028571428571425,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2346,
+        "height": 2763
+      },
+      "cropped_size": {
+        "width": 1407,
+        "height": 1658
+      },
+      "suggested_app_title": "Validação 21-05 P10"
+    },
+    {
+      "id": "21-05_P11",
+      "source_file": "data/image/21-05/P11.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P11.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 11,
+      "bloco": "Bloco 3",
+      "tratamento": "T3",
+      "dose_kg_ha": 75,
+      "falker_spad_reference": 38.885714285714286,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2312,
+        "height": 2681
+      },
+      "cropped_size": {
+        "width": 1387,
+        "height": 1608
+      },
+      "suggested_app_title": "Validação 21-05 P11"
+    },
+    {
+      "id": "21-05_P12",
+      "source_file": "data/image/21-05/P12.jpg",
+      "cropped_file": "data/export_app_validation/cropped/21-05/21-05_P12.jpg",
+      "date_folder": "21-05",
+      "date_key": "21-05-2026",
+      "ponto": 12,
+      "bloco": "Bloco 3",
+      "tratamento": "T1",
+      "dose_kg_ha": 0,
+      "falker_spad_reference": 33.385714285714286,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2114,
+        "height": 2563
+      },
+      "cropped_size": {
+        "width": 1269,
+        "height": 1538
+      },
+      "suggested_app_title": "Validação 21-05 P12"
+    },
+    {
+      "id": "26-05_P01",
+      "source_file": "data/image/26-05/P1.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P01.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 1,
+      "bloco": "Bloco 1",
+      "tratamento": "T3",
+      "dose_kg_ha": 75,
+      "falker_spad_reference": 36.94285714285714,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 480,
+        "height": 566
+      },
+      "cropped_size": {
+        "width": 288,
+        "height": 339
+      },
+      "suggested_app_title": "Validação 26-05 P1"
+    },
+    {
+      "id": "26-05_P02",
+      "source_file": "data/image/26-05/P2.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P02.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 2,
+      "bloco": "Bloco 1",
+      "tratamento": "T2",
+      "dose_kg_ha": 50,
+      "falker_spad_reference": 37.285714285714285,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2375,
+        "height": 2829
+      },
+      "cropped_size": {
+        "width": 1425,
+        "height": 1698
+      },
+      "suggested_app_title": "Validação 26-05 P2"
+    },
+    {
+      "id": "26-05_P03",
+      "source_file": "data/image/26-05/P3.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P03.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 3,
+      "bloco": "Bloco 1",
+      "tratamento": "T4",
+      "dose_kg_ha": 100,
+      "falker_spad_reference": 41.17142857142857,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2257,
+        "height": 2808
+      },
+      "cropped_size": {
+        "width": 1354,
+        "height": 1685
+      },
+      "suggested_app_title": "Validação 26-05 P3"
+    },
+    {
+      "id": "26-05_P04",
+      "source_file": "data/image/26-05/P4.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P04.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 4,
+      "bloco": "Bloco 1",
+      "tratamento": "T1",
+      "dose_kg_ha": 0,
+      "falker_spad_reference": 33.18571428571429,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2252,
+        "height": 2824
+      },
+      "cropped_size": {
+        "width": 1351,
+        "height": 1695
+      },
+      "suggested_app_title": "Validação 26-05 P4"
+    },
+    {
+      "id": "26-05_P05",
+      "source_file": "data/image/26-05/P5.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P05.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 5,
+      "bloco": "Bloco 2",
+      "tratamento": "T4",
+      "dose_kg_ha": 100,
+      "falker_spad_reference": 40.457142857142856,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2324,
+        "height": 3040
+      },
+      "cropped_size": {
+        "width": 1395,
+        "height": 1824
+      },
+      "suggested_app_title": "Validação 26-05 P5"
+    },
+    {
+      "id": "26-05_P06",
+      "source_file": "data/image/26-05/P6.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P06.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 6,
+      "bloco": "Bloco 2",
+      "tratamento": "T3",
+      "dose_kg_ha": 75,
+      "falker_spad_reference": 41.07142857142857,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2298,
+        "height": 2654
+      },
+      "cropped_size": {
+        "width": 1379,
+        "height": 1593
+      },
+      "suggested_app_title": "Validação 26-05 P6"
+    },
+    {
+      "id": "26-05_P07",
+      "source_file": "data/image/26-05/P7.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P07.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 7,
+      "bloco": "Bloco 2",
+      "tratamento": "T1",
+      "dose_kg_ha": 0,
+      "falker_spad_reference": 30.342857142857138,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2303,
+        "height": 2726
+      },
+      "cropped_size": {
+        "width": 1382,
+        "height": 1635
+      },
+      "suggested_app_title": "Validação 26-05 P7"
+    },
+    {
+      "id": "26-05_P08",
+      "source_file": "data/image/26-05/P8.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P08.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 8,
+      "bloco": "Bloco 2",
+      "tratamento": "T2",
+      "dose_kg_ha": 50,
+      "falker_spad_reference": 30.88571428571429,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 1994,
+        "height": 2628
+      },
+      "cropped_size": {
+        "width": 1197,
+        "height": 1577
+      },
+      "suggested_app_title": "Validação 26-05 P8"
+    },
+    {
+      "id": "26-05_P09",
+      "source_file": "data/image/26-05/P9.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P09.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 9,
+      "bloco": "Bloco 3",
+      "tratamento": "T2",
+      "dose_kg_ha": 50,
+      "falker_spad_reference": 36.45714285714286,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2334,
+        "height": 2942
+      },
+      "cropped_size": {
+        "width": 1401,
+        "height": 1765
+      },
+      "suggested_app_title": "Validação 26-05 P9"
+    },
+    {
+      "id": "26-05_P10",
+      "source_file": "data/image/26-05/P10.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P10.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 10,
+      "bloco": "Bloco 3",
+      "tratamento": "T4",
+      "dose_kg_ha": 100,
+      "falker_spad_reference": 36.18571428571429,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2164,
+        "height": 2721
+      },
+      "cropped_size": {
+        "width": 1299,
+        "height": 1632
+      },
+      "suggested_app_title": "Validação 26-05 P10"
+    },
+    {
+      "id": "26-05_P11",
+      "source_file": "data/image/26-05/P11.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P11.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 11,
+      "bloco": "Bloco 3",
+      "tratamento": "T3",
+      "dose_kg_ha": 75,
+      "falker_spad_reference": 36.98571428571428,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2051,
+        "height": 2643
+      },
+      "cropped_size": {
+        "width": 1230,
+        "height": 1586
+      },
+      "suggested_app_title": "Validação 26-05 P11"
+    },
+    {
+      "id": "26-05_P12",
+      "source_file": "data/image/26-05/P12.JPG",
+      "cropped_file": "data/export_app_validation/cropped/26-05/26-05_P12.jpg",
+      "date_folder": "26-05",
+      "date_key": "26-05-2026",
+      "ponto": 12,
+      "bloco": "Bloco 3",
+      "tratamento": "T1",
+      "dose_kg_ha": 0,
+      "falker_spad_reference": 30.785714285714285,
+      "crop_fraction": 0.2,
+      "original_size": {
+        "width": 2164,
+        "height": 2700
+      },
+      "cropped_size": {
+        "width": 1299,
+        "height": 1620
+      },
+      "suggested_app_title": "Validação 26-05 P12"
+    }
+  ]
+}

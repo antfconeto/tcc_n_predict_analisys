@@ -1,0 +1,49 @@
+<div class="kicker">Imagens</div>
+<h1 class="title">As fotos e o que o algoritmo enxerga nelas</h1>
+<p class="standfirst">
+  Todas as fotos das parcelas, as etapas do processamento aplicado a cada uma e os mapas de clorofila gerados
+  pela rede neural. Clique numa foto para ampliar e percorrer as etapas.
+</p>
+
+<section class="part">
+  <h2>O que acontece com cada foto</h2>
+  <div class="prose"><p>
+    Antes de qualquer estatística, a foto é recortada, filtrada e dividida em blocos de 10×10 pixels. Só os blocos
+    de vegetação entram no modelo. Escolha uma foto para ver as quatro etapas.
+  </p></div>
+  <div class="options"><label>Foto <select id="steps-photo"></select></label></div>
+  <div class="steps-row" id="steps-row"></div>
+</section>
+
+<section class="part">
+  <h2>Comparar duas fotos</h2>
+  <div class="prose"><p id="compare-text">
+    A mesma parcela em datas diferentes, ou tratamentos diferentes na mesma data.
+  </p></div>
+  <div class="options">
+    <label>Esquerda <select id="cmp-a"></select></label>
+    <label>Direita <select id="cmp-b"></select></label>
+    <label>Mostrar <select id="cmp-step">
+      <option value="photo">foto original</option><option value="crop">recorte</option>
+      <option value="mask">máscara de vegetação</option><option value="blocks">blocos</option>
+    </select></label>
+  </div>
+  <div class="compare" id="compare"></div>
+</section>
+
+<section class="part">
+  <h2>Todas as fotos</h2>
+  <div class="options" id="g-date"></div>
+  <div class="options" id="g-trat"></div>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<section class="part">
+  <h2>Mapas de clorofila (26/05 e 01/06)</h2>
+  <div class="prose"><p>
+    A rede aplicada a cada bloco de vegetação: verde = mais clorofila, vermelho = menos. A média do mapa fica
+    abaixo da predição da parcela, porque a rede foi treinada com estatísticas da foto inteira e aqui recebe
+    um bloco de cada vez. O mapa serve para ver o padrão espacial dentro da parcela, não o valor absoluto.
+  </p></div>
+  <div class="maps" id="maps"></div>
+</section>

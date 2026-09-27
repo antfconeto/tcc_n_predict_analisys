@@ -1,0 +1,72 @@
+<div class="kicker">Trabalho de conclusão de curso · 2026</div>
+<h1 class="title">Uma foto comum consegue medir a clorofila do capim?</h1>
+<p class="standfirst">
+  Doze parcelas de capim Marandu receberam quatro doses de nitrogênio. Durante três semanas, cada parcela
+  foi fotografada e medida com um clorofilômetro Falker. Este site mostra o que as fotos revelam, até onde
+  o modelo acerta e onde ele erra.
+</p>
+
+<figure class="wide-photo" id="overview-photo"></figure>
+
+<div class="facts">
+  <div><div class="n" data-k="best_r2" data-fmt="2">–</div><div class="l">R² prevendo uma data que ficou fora do treino</div></div>
+  <div><div class="n"><span data-k="mlp_mae" data-fmt="1">–</span></div><div class="l">SPAD de erro médio por foto</div></div>
+  <div><div class="n" data-k="n_samples">–</div><div class="l">fotos com leitura Falker de referência</div></div>
+  <div><div class="n" data-k="n_falker">–</div><div class="l">leituras do clorofilômetro</div></div>
+</div>
+
+<section class="part">
+  <h2>O que os dados mostram</h2>
+  <div class="prose">
+    <p>
+      <strong>A adubação mudou a clorofila.</strong> Nas três datas do experimento, o SPAD sobe com a dose de
+      nitrogênio, com efeito significativo na ANOVA em blocos (F ≥ <span data-k="anova_F_min" data-fmt="1">–</span>).
+      Esse é o sinal que a câmera precisa capturar.
+    </p>
+    <p>
+      <strong>A cor da folha acompanha esse sinal.</strong> Nas médias por tratamento, a razão entre as
+      coordenadas vermelha e azul (<code>r/b</code>) tem correlação de <span data-k="champ_r" data-fmt="2">–</span> com
+      o SPAD: folhas mais verdes refletem menos vermelho.
+    </p>
+    <p>
+      <strong>Dentro de uma coleta, a foto acompanha bem o SPAD.</strong> Com todas as parcelas fotografadas na
+      mesma hora e sob a mesma luz, o melhor índice prevê cada parcela a partir das outras com R² de
+      <span data-k="pd_18_05_loo" data-fmt="2">–</span> em 18/05, <span data-k="pd_26_05_loo" data-fmt="2">–</span> em 26/05
+      e <span data-k="pd_21_05_loo" data-fmt="2">–</span> em 21/05. Detalhes em <a href="#/coletas">Coletas</a>.
+    </p>
+    <p>
+      <strong>Entre coletas, a relação se desloca.</strong> Luz, umidade e estágio da planta mudam o nível da
+      cor. Prevendo uma data que ficou inteira fora do treino, a rede neural com 24 estatísticas de cor chega a
+      R² = <span data-k="mlp_r2" data-fmt="2">–</span> (erro médio de <span data-k="mlp_mae" data-fmt="1">–</span> SPAD),
+      e o melhor índice único, <code data-k="idx_name">–</code>, a R² = <span data-k="idx_r2" data-fmt="2">–</span>.
+      Este último foi escolhido entre 117 candidatos olhando o próprio resultado, então o valor é otimista:
+      na prática, os dois empatam.
+    </p>
+    <p class="small muted">
+      Versões anteriores deste site mostravam R² = 0,75 para a rede neural. Esse valor dependia de um resíduo
+      de arredondamento numérico numa das entradas (a média de r, g e b, que é sempre 1/3). Sem ele o modelo
+      antigo fica em <span data-k="v1_clean_r2" data-fmt="2">–</span>. O modelo foi retreinado sem essas
+      entradas e com a máscara de sombra e reflexo; os números acima já são os corrigidos.
+    </p>
+    <p>
+      <strong>Os erros têm explicação.</strong> O maior deles é uma parcela de 21/05 com o SPAD mais alto de todo
+      o experimento, numa data em que o modelo, em média, subestimou as parcelas. A data de teste (01/06), com palha
+      seca e leituras muito dispersas, foi superestimada. Cada caso está justificado na página
+      <a href="#/outliers">Outliers</a>.
+    </p>
+  </div>
+</section>
+
+<section class="part">
+  <h2>Como navegar</h2>
+  <dl class="glossary">
+    <dt><a href="#/campo">Campo</a></dt><dd>O mapa das parcelas. Clique numa delas para ver as fotos de cada data, as leituras, o que o modelo previu e o que a imagem "viu".</dd>
+    <dt><a href="#/coletas">Coletas</a></dt><dd>Cada data analisada sozinha: quais índices acompanham o SPAD naquele dia, se a foto separa as doses e quais índices funcionam em todas as datas.</dd>
+    <dt><a href="#/analise">Análise</a></dt><dd>A história em figuras: dose × clorofila, cor × clorofila, o modelo, os erros e a relação com altura e biomassa.</dd>
+    <dt><a href="#/outliers">Outliers</a></dt><dd>Os casos fora do padrão, o critério que os marcou e a causa provável de cada um.</dd>
+    <dt><a href="#/imagens">Imagens</a></dt><dd>Todas as fotos lado a lado, as etapas do processamento e os mapas de clorofila.</dd>
+    <dt><a href="#/dados">Dados</a></dt><dd>As tabelas do banco, os relatórios, o histórico de execuções e o glossário.</dd>
+  </dl>
+</section>
+
+<p class="next-link"><small>Começar por</small><a href="#/campo">O campo, parcela por parcela →</a></p>

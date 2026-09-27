@@ -1,0 +1,1 @@
+{"table":"legacy__radnorm_best_summary","columns":["run_id","Pipeline","CV","Spectral_Index","R2_mean","R2_std","RMSE_mean"],"rows":[[2,"radnorm","LOBO","SI",0.558805,0.127687,2.81016],[2,"radnorm","LODO","r",-0.230636,0.795745,3.03923],[2,"raw","LOBO","SI",0.569226,0.126011,2.77626],[2,"raw","LODO","r",-0.218841,0.783697,3.0283]],"has_run":true}

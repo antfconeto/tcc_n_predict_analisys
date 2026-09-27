@@ -1,0 +1,1 @@
+{"table":"rgb_preprocess_search_summary","columns":["run_id","Variant","R2_OOF","RMSE_OOF","N_Samples","N_Groups","R2_Fold_min","R2_Fold_max","R2_Fold_std","Canopy_Cover_mean","Veg_Blocks_mean","cfg_filter_type","Delta_vs_baseline"],"rows":[[19,"bilateral",0.753362,2.09805,34,4,-0.0856808,0.801173,0.352163,88.856,19210.8,"bilateral",0.135662]],"has_run":true}

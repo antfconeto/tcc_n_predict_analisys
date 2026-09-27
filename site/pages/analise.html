@@ -1,0 +1,151 @@
+<div class="kicker">Análise</div>
+<h1 class="title">Da adubação ao modelo, em figuras</h1>
+<p class="standfirst">
+  Cada figura vem com a leitura do que ela mostra. As cores das datas são as mesmas em todo o site:
+  <span id="date-legend"></span>
+</p>
+
+<section class="part">
+  <h2>1. A adubação mudou a clorofila</h2>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura 1</div><div class="fig-title">Clorofila média por dose de nitrogênio</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="f-dose">ver dados</button></div></div>
+    <div class="chart" id="f-dose"></div>
+    <figcaption class="interp">
+      Média das leituras individuais ± erro padrão. <strong>O SPAD sobe com a dose em todas as datas</strong>
+      (ANOVA em blocos, p ≤ <span data-k="anova_p_max" data-fmt="p">–</span>), e <strong>cai de uma data para a
+      outra em todas as doses</strong>. Esse segundo efeito é tão grande quanto o primeiro, e é por isso que os
+      modelos precisam ser testados em datas novas.
+    </figcaption>
+  </figure>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura 2</div><div class="fig-title">Cada leitura do clorofilômetro, por tratamento</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="f-readings">ver dados</button></div></div>
+    <div class="options" id="f-readings-date"></div>
+    <div class="chart" id="f-readings"></div>
+    <figcaption class="interp">
+      Cada ponto é uma leitura; o traço é a média. Dentro de uma mesma parcela, as folhas variam alguns pontos
+      de SPAD, e as leituras de doses vizinhas (50 e 75 kg) se sobrepõem. A diferença clara é entre T1 (sem N) e
+      T4 (100 kg). Clique num ponto para abrir a parcela.
+    </figcaption>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>2. A cor da foto acompanha a clorofila, mas muda com a data</h2>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura 3</div><div class="fig-title">Razão vermelho/azul (mediana dos blocos) × SPAD medido, por foto</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="f-index">ver dados</button></div></div>
+    <div class="chart" id="f-index"></div>
+    <figcaption class="interp">
+      Em cada data, quanto mais clorofila, menor a razão <code>r/b</code>: os pontos de uma mesma cor descem da
+      esquerda para a direita. Mas <strong>cada data forma sua própria nuvem</strong>, deslocada das outras. Uma
+      fórmula ajustada em duas datas erra o nível da terceira: medindo o R² dentro de cada data deixada de fora,
+      o melhor índice linear fica, em média, em <span data-k="lodo_best" data-fmt="2">–</span> (negativo = pior que a média
+      daquela data). Dentro de cada data, porém, a relação é forte; veja <a href="#/coletas">Coletas</a>.
+    </figcaption>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>3. O modelo</h2>
+  <div class="prose">
+    <p>
+      A rede neural recebe 24 números por foto (mediana, média, percentis 75 e 90 de seis combinações das
+      coordenadas de cor r, g e b dos blocos de vegetação: r, g, b, rg, rb, gb) e tem apenas 3 neurônios ocultos.
+      Antes de extrair os números, pixels muito escuros, muito claros, pouco saturados ou com reflexo são descartados. Todas as predições
+      abaixo são de uma data que ficou <strong>fora do treino</strong>.
+    </p>
+  </div>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura 4</div><div class="fig-title">Observado × previsto: rede neural e melhor índice único</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="f-mlp">ver dados</button></div></div>
+    <div class="two">
+      <div><div class="options"><span>Rede neural (24 entradas) · R² <span data-k="mlp_r2" data-fmt="3">–</span></span></div><div class="chart" id="f-mlp"></div></div>
+      <div><div class="options"><span>Índice único <code data-k="idx_name">–</code> · R² <span data-k="idx_r2" data-fmt="3">–</span></span></div><div class="chart" id="f-idx"></div></div>
+    </div>
+    <figcaption class="interp">
+      Pontos sobre a diagonal são acertos perfeitos. A rede e o melhor índice ficam praticamente empatados; o
+      índice foi escolhido entre 117 candidatos olhando este mesmo resultado, então seu R² é otimista.
+      Nos dois, os pontos de 21/05 ficam abaixo da diagonal: o erro é de nível da data, não de ordem das parcelas. Os pontos vazados são a data de teste (01/06), todos acima da diagonal:
+      o modelo superestima a área de teste. Clique num ponto para abrir a parcela.
+    </figcaption>
+  </figure>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura 5</div><div class="fig-title">Erro da rede neural por foto, agrupado por data</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="f-res">ver dados</button></div></div>
+    <div class="chart" id="f-res"></div>
+    <figcaption class="interp" id="f-res-text">
+      Erro = previsto − medido. O traço é o erro médio (viés) de cada data.
+    </figcaption>
+  </figure>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura 6</div><div class="fig-title">Tudo o que foi testado, pelo R² fora da amostra</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="f-appr">ver dados</button></div></div>
+    <div class="chart" id="f-appr"></div>
+    <figcaption class="interp">
+      Em azul, o modelo definitivo. Barras à esquerda de zero significam previsão pior do que simplesmente usar a
+      média. A regressão simbólica e a busca de fórmulas usaram uma divisão fixa de datas, e não a validação por
+      data completa: compare com cautela.
+    </figcaption>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>4. O que atrapalha a foto</h2>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura 7</div><div class="fig-title">Cobertura vegetal da foto × erro absoluto da rede</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="f-cover">ver dados</button></div></div>
+    <div class="chart" id="f-cover"></div>
+    <figcaption class="interp">
+      Cobertura = porcentagem dos blocos de 10×10 px classificados como vegetação. Duas das três fotos da data de
+      teste (vazadas) têm cerca de metade da área com solo e palha. Entre as parcelas do experimento, a cobertura
+      vai de <span id="cover-min">–</span>% a <span id="cover-max">–</span>% e quase não se relaciona com o erro (correlação <span id="cover-corr">–</span>): não explica
+      sozinha os erros maiores. Por isso as causas são investigadas caso a
+      caso na página <a href="#/outliers">Outliers</a>.
+    </figcaption>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>5. Clorofila, altura e biomassa (26/05)</h2>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura 8</div><div class="fig-title">Altura média × clorofila medida, por parcela</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="f-height">ver dados</button></div></div>
+    <div class="chart" id="f-height"></div>
+    <figcaption class="interp">
+      Cor mais escura = dose maior. A altura acompanha a clorofila de perto (R² = <span data-k="alt_clo_plot" data-fmt="2">–</span>,
+      12 parcelas): parcelas mais adubadas são mais verdes e mais altas. P3 e P12 ficaram mais altas do que a
+      clorofila delas indicaria (ver <a href="#/outliers">outliers</a>).
+    </figcaption>
+  </figure>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura 9</div><div class="fig-title">Quanto cada preditor explica (R²) das variáveis de crescimento</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="f-veg">ver dados</button></div></div>
+    <div class="options" id="f-veg-level"></div>
+    <div class="chart" id="f-veg"></div>
+    <figcaption class="interp">
+      Nas parcelas (12 pontos), altura e massa de folha são as variáveis mais bem explicadas; o colmo e a
+      relação folha/colmo quase não respondem. Nas médias (4 pontos), os modelos quadráticos passam de 0,9 em
+      quase todas as variáveis, mas uma curva com 3 parâmetros quase sempre passa por 4 pontos: esses valores
+      não são evidência forte.
+    </figcaption>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>6. O modelo dentro do app</h2>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura 10</div><div class="fig-title">Predição do app Nutrinitro × Falker</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="f-app">ver dados</button></div></div>
+    <div class="chart" id="f-app"></div>
+    <figcaption class="interp">
+      As 34 fotos, já recortadas, foram analisadas pelo próprio app (R² = <span data-k="app_r2" data-fmt="2">–</span>;
+      <span data-k="app_r2_clean" data-fmt="2">–</span> sem os <span id="app-out-n">–</span> casos com erro acima de 2,5 SPAD).
+      O padrão dos erros repete o do modelo no computador: 21/05 abaixo da diagonal, 01/06 acima. Sem o recorte
+      de 20% das bordas, o mesmo modelo cai para R² = <span data-k="aligned_nocrop_r2" data-fmt="2">–</span>.
+    </figcaption>
+  </figure>
+</section>
+
+<p class="next-link"><small>Próximo</small><a href="#/outliers">Os casos fora do padrão →</a></p>

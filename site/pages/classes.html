@@ -1,0 +1,118 @@
+<div class="kicker">Classes</div>
+<h1 class="title">Clorofila em classes: baixa, média e alta</h1>
+<p class="standfirst">
+  Em vez do número exato, cada parcela recebe uma classe. As classes foram criadas a partir das próprias medições
+  do Falker, pelo critério das faixas de Beaufils, e depois a foto foi testada para ver se acerta a classe.
+</p>
+
+<div class="facts" id="cl-facts"></div>
+
+<section class="part">
+  <h2>Como as classes foram criadas</h2>
+  <div class="prose">
+    <p>
+      Não existe uma tabela de SPAD que valha para qualquer pastagem: o índice muda com solo, clima, cultivar,
+      estação e aparelho, e a recomendação é calibrar para as condições do local (Bacelar et al., 2015). Por isso as
+      classes saem das medições deste experimento.
+    </p>
+    <p>
+      O critério é o das <strong>faixas de Beaufils</strong> (Beaufils, 1973), usado no diagnóstico nutricional de
+      plantas no Brasil (Urano et al., 2007; Serra et al., 2012; Guimarães, 2014). Ele divide os valores em cinco
+      faixas pela média (m) e pelo desvio padrão (s): deficiência (abaixo de m − 4/3 s), tendência à deficiência,
+      suficiente (m ± 2/3 s), tendência ao excesso e excesso (acima de m + 4/3 s). A população usada foi o SPAD médio
+      de cada parcela nas três coletas (<span id="cl-n">–</span> valores).
+    </p>
+    <p>
+      As cinco faixas foram agrupadas em <strong>três classes</strong>: baixa (abaixo de m − 2/3 s), média (m ± 2/3 s)
+      e alta (acima de m + 2/3 s). Com cinco, cada faixa teria só 2,7 SPAD de largura, menos que a incerteza da própria
+      média do Falker; a comparação está na seção "A incerteza do Falker", mais abaixo.
+    </p>
+    <p id="cl-normal"></p>
+  </div>
+  <div id="cl-scheme"></div>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">As 36 medições e as faixas de cada classe</div></div></div>
+    <div class="chart" id="cl-dist"></div>
+    <figcaption class="interp">Cada ponto é uma parcela em uma data (SPAD médio do Falker). Cor mais escura = dose maior. As faixas de fundo são as classes. Clique num ponto para abrir a parcela.</figcaption>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>As classes fazem sentido?</h2>
+  <div class="prose"><p id="cl-valid-text"></p></div>
+  <div id="cl-valid"></div>
+</section>
+
+<section class="part" id="cl-uncertainty">
+  <h2>A incerteza do Falker</h2>
+  <div class="prose">
+    <p id="cl-unc-text"></p>
+  </div>
+  <div class="facts" id="cl-unc-facts"></div>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Média de cada parcela e o intervalo de confiança de 95 %</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="cl-ci">ver dados</button></div></div>
+    <div class="chart" id="cl-ci"></div>
+    <figcaption class="interp" id="cl-ci-text"></figcaption>
+  </figure>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Tabela</div><div class="fig-title">Quantas classes? Teto do Falker e acerto da foto em cada esquema</div></div></div>
+    <div id="cl-schemes"></div>
+    <figcaption class="interp" id="cl-schemes-text"></figcaption>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>As parcelas em classes</h2>
+  <div class="options" id="cl-source"></div>
+  <p class="prose" id="cl-source-text" style="margin-top:14px"></p>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Classe de cada parcela, por data (linhas = dose, colunas = bloco)</div></div></div>
+    <div id="cl-grid" class="cl-grids"></div>
+    <div id="cl-legend"></div>
+    <figcaption class="interp" id="cl-grid-text"></figcaption>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>A foto acerta a classe?</h2>
+  <div class="prose">
+    <p>
+      Cada índice da foto (117 combinações de índice e estatística) foi transformado em SPAD por uma reta ajustada em
+      duas datas e testada na terceira, que ela não viu. O SPAD previsto recebe a classe pelos mesmos limites. Como
+      escolher o melhor índice entre 117 olhando o resultado infla o número, a escolha foi repetida usando só as
+      datas de treino (<strong>escolha aninhada</strong>): esse é o desempenho esperado numa coleta nova. Também foi
+      buscada uma rede neural pequena com o mesmo cuidado (240 configurações, escolhida sem a data testada), e a rede
+      neural definitiva entra como comparação. Como o Falker também erra, há duas colunas extras: o acerto só nas
+      parcelas em que a classe do Falker é segura, e o acerto aceitando qualquer classe dentro da incerteza do Falker.
+    </p>
+  </div>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Os 15 índices que melhor reproduzem a classe do Falker</div></div>
+      <div class="fig-tools"><button class="linkish" data-table-for="cl-rank">ver dados</button></div></div>
+    <div class="chart" id="cl-rank"></div>
+    <figcaption class="interp" id="cl-rank-text"></figcaption>
+  </figure>
+  <div id="cl-agree"></div>
+  <p class="prose small muted" style="margin-top:10px">
+    Kappa ponderado: concordância descontando o acaso, com erros de duas classes pesando mais que erros de uma.
+    0,41–0,60 moderada; 0,61–0,80 substancial; acima de 0,80 quase perfeita (Landis; Koch, 1977).
+  </p>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Tabela</div><div class="fig-title">Classe medida (linhas) × classe prevista (colunas)</div></div></div>
+    <div class="options" id="cl-conf-method"></div>
+    <div id="cl-confusion" style="margin-top:12px"></div>
+    <figcaption class="interp" id="cl-confusion-text"></figcaption>
+  </figure>
+  <figure class="fig">
+    <div class="fig-head"><div><div class="fig-num">Tabela</div><div class="fig-title">Todas as parcelas</div></div></div>
+    <div id="cl-table"></div>
+  </figure>
+</section>
+
+<section class="part">
+  <h2>Referências</h2>
+  <div id="cl-refs" class="prose refs"></div>
+</section>
+
+<p class="next-link"><small>Próximo</small><a href="#/analise">A análise completa, em figuras →</a></p>
