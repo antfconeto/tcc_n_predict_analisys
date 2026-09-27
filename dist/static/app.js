@@ -406,10 +406,11 @@ function lineChart(el, { series, xTicks, xLabel, yLabel, height = 320, xFmt = (v
  * Dispersão. points: [{x, y, color, hollow, label, tip:[linhas extras], mark:"rótulo direto"}]
  * opts.identity desenha a linha 1:1; opts.fit desenha a reta de mínimos quadrados.
  */
-function scatter(el, { points, xLabel, yLabel, height = 340, identity = false, fit = false, square = false, legendItems, onClick, xFmt, yFmt }) {
+function scatter(el, { points, xLabel, yLabel, height = 340, identity = false, fit = false, square = false, legendItems, onClick, xFmt, yFmt, refLines = [] }) {
   const { svg, width } = frame(el, height);
-  const m = { l: 48, r: 20, t: 30, b: 44 };
-  let xs = points.map((p) => p.x), ys = points.map((p) => p.y);
+  const m = { l: 48, r: refLines.some((r) => r.axis !== "x") ? 90 : 20, t: 30, b: 44 };
+  let xs = [...points.map((p) => p.x), ...refLines.filter((r) => r.axis === "x").map((r) => r.value)];
+  let ys = [...points.map((p) => p.y), ...refLines.filter((r) => r.axis !== "x").map((r) => r.value)];
   if (square) { xs = ys = [...xs, ...ys]; }
   const xt = niceTicks(Math.min(...xs), Math.max(...xs), 5), yt = square ? xt : niceTicks(Math.min(...ys), Math.max(...ys), 5);
   const plotW = square ? Math.min(width - m.l - m.r, height - m.t - m.b + 140) : width - m.l - m.r;
@@ -417,6 +418,17 @@ function scatter(el, { points, xLabel, yLabel, height = 340, identity = false, f
   axes(svg, { x, y, xt, yt, x0: m.l, x1: m.l + plotW, y0: height - m.b, y1: m.t, xLabel, yLabel, xFmt, yFmt, height });
   if (identity) svg.append(s("line", { x1: x(xt[0]), y1: y(xt[0]), x2: x(xt.at(-1)), y2: y(xt.at(-1)), class: "ref-line" }),
     s("text", { x: x(xt.at(-1)) - 4, y: y(xt.at(-1)) + 14, "text-anchor": "end", class: "tick-label" }, "1:1"));
+  let nx = 0;
+  for (const r of refLines) {   // linhas de referência: {axis: "x"|"y", value, label, dash}
+    const attrs = { class: "ref-line", "stroke-dasharray": r.dash === false ? null : "4 4" };
+    if (r.axis === "x") {
+      svg.append(s("line", { x1: x(r.value), x2: x(r.value), y1: y(yt[0]), y2: y(yt.at(-1)), ...attrs }));
+      if (r.label) svg.append(s("text", { x: x(r.value) + 4, y: y(yt.at(-1)) + 12 + 14 * nx++, class: "tick-label" }, r.label));
+    } else {
+      svg.append(s("line", { x1: m.l, x2: m.l + plotW, y1: y(r.value), y2: y(r.value), ...attrs }));
+      if (r.label) svg.append(s("text", { x: m.l + plotW + 6, y: y(r.value) + 4, class: "tick-label" }, r.label));
+    }
+  }
   if (fit && points.length > 2) {
     const n = points.length, mx = points.reduce((a, p) => a + p.x, 0) / n, my = points.reduce((a, p) => a + p.y, 0) / n;
     const b = points.reduce((a, p) => a + (p.x - mx) * (p.y - my), 0) / points.reduce((a, p) => a + (p.x - mx) ** 2, 0);
@@ -618,6 +630,7 @@ const PAGES = [
   { id: "classes", title: "Classes" },
   { id: "analise", title: "Análise" },
   { id: "vegetativo", title: "Altura e massa" },
+  { id: "ciencia", title: "Aprofundamento" },
   { id: "outliers", title: "Outliers" },
   { id: "imagens", title: "Imagens" },
   { id: "dados", title: "Dados" },

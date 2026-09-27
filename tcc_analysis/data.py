@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from . import db
+from . import config, db
 from .config import PONTO_TO_DBC
 
 FALKER_COLUMNS = {
@@ -198,3 +198,18 @@ def load_vegetation_plots(date: str = "26-05-2026", verbose: bool = True) -> pd.
     df["Rel_Folha_Colmo_Verde"] = df["Massa_Verde_Folha_ha"] / df["Massa_Verde_Colmo_ha"]
     df["Rel_Folha_Colmo_Seco"] = df["Massa_Seca_Folha_ha"] / df["Massa_Seca_Colmo_ha"]
     return df
+
+
+def falker_plot_means(dates=None) -> pd.DataFrame:
+    """Média, desvio e nº de leituras Falker (total, A e B) por parcela e data, com bloco, tratamento e dose."""
+    f = load_falker_all()
+    dates = dates or config.EXPERIMENTAL_DATES
+    f = f[f.Data.isin(dates)].copy()
+    f["Ponto"] = f.Ponto.astype(int)
+    g = (f.groupby(["Data", "Ponto"])
+         .agg(SPAD=("Clorofila Total", "mean"), SPAD_dp=("Clorofila Total", "std"), n_leituras=("Clorofila Total", "size"),
+              Clorofila_A=("Clorofila A", "mean"), Clorofila_B=("Clorofila B", "mean"))
+         .reset_index())
+    for field in ("Bloco", "Tratamento", "Dose"):
+        g[field] = g.Ponto.map(lambda p, fl=field: config.PONTO_TO_DBC.get(int(p), {}).get(fl))
+    return g

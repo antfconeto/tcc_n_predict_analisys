@@ -1,0 +1,1 @@
+{"table":"sci_plan_dates","columns":["run_id","Datas_no_treino","Combinacoes","R2_na_data_nova_medio","Erro_medio_SPAD","Acerto_classe_medio"],"rows":[[78,1,6,0.536323,1.75186,0.793651],[78,2,3,0.515659,1.81278,0.869048],[81,1,6,0.536323,1.75186,0.793651],[81,2,3,0.515659,1.81278,0.869048]],"has_run":true}

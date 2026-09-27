@@ -23,17 +23,14 @@ Tabelas: mlp_class_search, mlp_class_nested, mlp_class_summary, mlp_class_predic
 
 import itertools
 import os
-import re
 import sys
 import time
 import warnings
 from pathlib import Path
 
-import cv2
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
-from scipy.stats import spearmanr
 from sklearn.decomposition import PCA
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import StandardScaler
@@ -42,14 +39,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from tcc_analysis import config, db
 from tcc_analysis.data import load_falker_all
-from tcc_analysis.indices import INDEX_STATISTICS, calculate_all_indices
-from tcc_analysis.preprocess import build_vegetation_mask, merge_preprocess_config, preprocess_image
+from tcc_analysis.tiles import extract_photo_units
 
 warnings.filterwarnings("ignore")
 os.environ["PYTHONWARNINGS"] = "ignore"
 
-TILES = 3
-MIN_VEG_BLOCKS = 30
 N_SEEDS = 3
 
 DATA_MODES = ["foto", "recortes"]
@@ -57,53 +51,6 @@ INPUTS = [("modelo", None), ("top", 4), ("top", 8), ("pca", 5), ("pca", 10)]
 HIDDEN = [(2,), (4,), (8,), (8, 4)]
 ACTIVATIONS = ["relu", "tanh"]
 ALPHAS = [0.1, 1.0, 10.0]
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# extração: foto inteira e recortes 3×3, com o pré-processamento definitivo
-# ─────────────────────────────────────────────────────────────────────────────
-def stats_row(indices, mask):
-    row = {}
-    for key, arr in indices.items():
-        vals = arr[mask] if mask.any() else np.array([0.0])
-        for stat_name, fn in INDEX_STATISTICS.items():
-            row[f"{stat_name}_{key}"] = fn(vals)
-    return row
-
-
-def extract(block_size=10):
-    pp = merge_preprocess_config(config.BEST_PREPROCESS_CONFIG)
-    root = str(config.IMAGE_ROOT)
-    rows = []
-    for folder in sorted(d for d in os.listdir(root) if os.path.isdir(os.path.join(root, d))):
-        date = f"{folder}-{config.YEAR}"
-        for fn in sorted(os.listdir(os.path.join(root, folder))):
-            m = re.match(r"^[Pp](\d+)", fn)
-            if not m or not fn.lower().endswith((".jpg", ".jpeg", ".png")):
-                continue
-            img = cv2.imread(os.path.join(root, folder, fn))
-            if img is None:
-                continue
-            f, _ = preprocess_image(img, pp)
-            h, w, _ = f.shape
-            nh, nw = h // block_size, w // block_size
-            with np.errstate(invalid="ignore"):
-                down = np.nanmean(f[:nh * block_size, :nw * block_size].reshape(nh, block_size, nw, block_size, 3), axis=(1, 3))
-            ind = calculate_all_indices(down[:, :, 2], down[:, :, 1], down[:, :, 0])
-            mask = build_vegetation_mask(ind, pp)
-            base = {"Data": date, "Ponto": int(m.group(1))}
-            rows.append({**base, "Recorte": -1, "Veg_blocks": int(mask.sum()), **stats_row(ind, mask)})
-            ys = np.linspace(0, nh, TILES + 1).astype(int)
-            xs = np.linspace(0, nw, TILES + 1).astype(int)
-            for i in range(TILES):
-                for j in range(TILES):
-                    sl = (slice(ys[i], ys[i + 1]), slice(xs[j], xs[j + 1]))
-                    tm = mask[sl]
-                    if tm.sum() < MIN_VEG_BLOCKS:
-                        continue
-                    rows.append({**base, "Recorte": i * TILES + j, "Veg_blocks": int(tm.sum()),
-                                 **stats_row({k: v[sl] for k, v in ind.items()}, tm)})
-    return pd.DataFrame(rows)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -198,7 +145,7 @@ def main():
     limits = scheme.SPAD_max.dropna().tolist()
     CLASSES = scheme.Classe.tolist()
 
-    feats_df = extract()
+    feats_df = extract_photo_units(tiles=3)
     f = load_falker_all()
     spad = f.groupby(["Data", "Ponto"])["Clorofila Total"].mean().rename("SPAD").reset_index()
     spad["Ponto"] = spad.Ponto.astype(int)

@@ -1,0 +1,151 @@
+<div class="kicker">Aprofundamento</div>
+<h1 class="title">O que mais os dados dizem</h1>
+<p class="standfirst">
+  Oito análises complementares: se a foto mede a parcela com menos ruído que o Falker, se os dois concordam, se
+  apontam a mesma dose de N, qual clorofila limita a produção, o que muda entre as clorofilas a e b, a
+  desuniformidade dentro da parcela, a queda entre as coletas e como dimensionar a próxima coleta.
+</p>
+
+<div class="facts" id="sc-facts"></div>
+
+<section class="part" id="sc-plain">
+  <h2>Em poucas palavras</h2>
+  <div class="plain-grid" id="sc-plain-grid"></div>
+  <p class="plain-bottom" id="sc-plain-bottom"></p>
+</section>
+
+<nav class="toc" id="sc-toc"></nav>
+
+<section class="part" id="sc-1">
+  <h2>1. A foto mede a parcela com menos ruído?</h2>
+  <p class="plain-note" id="sc-1-plain"></p>
+  <div class="prose">
+    <p>
+      Dentro de uma data, cada parcela tem 7 leituras do Falker (folhas) e 9 recortes da foto. A <strong>confiabilidade
+      da média da parcela</strong> diz quanto da diferença entre parcelas é real e quanto é ruído das folhas (ou dos
+      recortes): 1 é perfeito. A correlação intraclasse segue Shrout e Fleiss (1979); a versão "meia × meia" compara
+      duas metades independentes das medidas. O F da dose, na ANOVA em blocos, mede o quanto cada medida separa os
+      tratamentos.
+    </p>
+    <p id="sc-1-text"></p>
+  </div>
+  <div class="two">
+    <figure class="fig"><div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Confiabilidade da média da parcela</div></div></div>
+      <div class="chart" id="sc-1-rel"></div></figure>
+    <figure class="fig"><div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">F da dose (ANOVA em blocos)</div></div></div>
+      <div class="chart" id="sc-1-f"></div></figure>
+  </div>
+  <div id="sc-1-table"></div>
+  <p class="small muted" style="margin-top:10px">
+    Ressalva: os 9 recortes vêm da mesma foto e compartilham luz e câmera; as 7 folhas do Falker são medições
+    independentes. Isso favorece um pouco a foto na confiabilidade, mas não no F da dose, que compara parcelas.
+  </p>
+</section>
+
+<section class="part" id="sc-2">
+  <h2>2. Foto e Falker concordam? (Bland-Altman)</h2>
+  <p class="plain-note" id="sc-2-plain"></p>
+  <div class="prose"><p>
+    O método de Bland e Altman (1986) compara dois instrumentos: para cada parcela, a média das duas medidas (eixo x) e a
+    diferença foto − Falker (eixo y). A linha do meio é o viés; as de fora são os limites de concordância, onde caem 95 %
+    das diferenças. Para comparação, a faixa esperada entre duas medições do próprio Falker.
+  </p></div>
+  <div class="options" id="sc-2-method"></div>
+  <figure class="fig"><div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Diferença foto − Falker × média das duas</div></div></div>
+    <div class="chart" id="sc-2-chart"></div>
+    <figcaption class="interp" id="sc-2-text"></figcaption></figure>
+  <div id="sc-2-table"></div>
+</section>
+
+<section class="part" id="sc-3">
+  <h2>3. A foto aponta a mesma dose ótima?</h2>
+  <p class="plain-note" id="sc-3-plain"></p>
+  <div class="prose"><p>
+    Em cada data foram ajustados três modelos de resposta à dose (linear, quadrático e linear-platô) e escolhido o de
+    menor AICc. A dose ótima é o máximo da quadrática ou o início do platô. Para comparar medidas em escalas diferentes,
+    cada uma foi padronizada dentro da data (desvios padrão acima ou abaixo da média); a dose ótima não depende disso.
+  </p></div>
+  <div class="options" id="sc-3-date"></div>
+  <figure class="fig"><div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Resposta à dose de N (média e erro padrão por dose)</div></div></div>
+    <div class="chart" id="sc-3-chart"></div>
+    <figcaption class="interp" id="sc-3-text"></figcaption></figure>
+  <div id="sc-3-table"></div>
+</section>
+
+<section class="part" id="sc-4">
+  <h2>4. Qual clorofila limita a produção?</h2>
+  <p class="plain-note" id="sc-4-plain"></p>
+  <div class="prose"><p>
+    Em 26/05, única data com corte, a produção de cada parcela foi dividida pela maior do experimento (produção relativa).
+    O nível crítico de Cate e Nelson (1971) é o valor de clorofila que melhor separa as parcelas de produção baixa das
+    de produção alta; o linear-platô dá o ponto a partir do qual a produção não aumenta mais. Para a foto, o valor foi
+    convertido em SPAD pela reta da própria data. Com 12 parcelas, é uma indicação.
+  </p></div>
+  <div class="options" id="sc-4-y"></div>
+  <div class="options" id="sc-4-m"></div>
+  <figure class="fig"><div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title" id="sc-4-title">Produção relativa × clorofila</div></div></div>
+    <div class="chart" id="sc-4-chart"></div>
+    <figcaption class="interp" id="sc-4-text"></figcaption></figure>
+  <div id="sc-4-table"></div>
+</section>
+
+<section class="part" id="sc-5">
+  <h2>5. Clorofila a e b</h2>
+  <p class="plain-note" id="sc-5-plain"></p>
+  <div class="prose"><p id="sc-5-text"></p></div>
+  <div class="two">
+    <figure class="fig"><div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Razão clorofila a/b por dose</div></div></div>
+      <div class="chart" id="sc-5-chart"></div></figure>
+    <div><div id="sc-5-table"></div></div>
+  </div>
+  <p class="small muted" style="margin-top:10px">Clorofila a e b são estimativas ópticas do próprio Falker, não extração em laboratório.</p>
+</section>
+
+<section class="part" id="sc-6">
+  <h2>6. A parcela é uniforme?</h2>
+  <p class="plain-note" id="sc-6-plain"></p>
+  <div class="prose"><p id="sc-6-text"></p></div>
+  <div class="two">
+    <figure class="fig"><div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Foto: variação entre blocos (CV de b/r) por dose</div></div></div>
+      <div class="chart" id="sc-6-photo"></div></figure>
+    <figure class="fig"><div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Falker: variação entre as 7 folhas (CV) por dose</div></div></div>
+      <div class="chart" id="sc-6-falker"></div></figure>
+  </div>
+  <div id="sc-6-table"></div>
+</section>
+
+<section class="part" id="sc-7">
+  <h2>7. Como a clorofila mudou entre as coletas</h2>
+  <p class="plain-note" id="sc-7-plain"></p>
+  <div class="prose"><p id="sc-7-text"></p></div>
+  <figure class="fig"><div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">SPAD médio por dose ao longo das coletas</div></div></div>
+    <div class="chart" id="sc-7-chart"></div></figure>
+  <div id="sc-7-table"></div>
+</section>
+
+<section class="part" id="sc-8">
+  <h2>8. Planejando a próxima coleta</h2>
+  <p class="plain-note" id="sc-8-plain"></p>
+  <div class="prose"><p id="sc-8-text"></p></div>
+  <div class="two">
+    <figure class="fig"><div class="fig-head"><div><div class="fig-num">Figura</div><div class="fig-title">Leituras do Falker por parcela × certeza da classe</div></div></div>
+      <div class="chart" id="sc-8-chart"></div></figure>
+    <div>
+      <div class="fig-num" style="margin-top:6px">Tabela</div><div class="fig-title" style="margin-bottom:8px">Leituras para cada margem de erro</div>
+      <div id="sc-8-readings"></div>
+    </div>
+  </div>
+  <figure class="fig"><div class="fig-head"><div><div class="fig-num">Tabela</div><div class="fig-title">Blocos (repetições) para detectar diferenças entre doses, com 80 % de poder</div></div></div>
+    <div id="sc-8-blocks"></div>
+    <figcaption class="interp" id="sc-8-blocks-text"></figcaption></figure>
+  <figure class="fig"><div class="fig-head"><div><div class="fig-num">Tabela</div><div class="fig-title">Quantas datas no treino?</div></div></div>
+    <div id="sc-8-dates"></div>
+    <figcaption class="interp" id="sc-8-dates-text"></figcaption></figure>
+</section>
+
+<section class="part">
+  <h2>Referências</h2>
+  <div id="sc-refs" class="prose refs"></div>
+</section>
+
+<p class="next-link"><small>Próximo</small><a href="#/outliers">Os casos fora do padrão →</a></p>

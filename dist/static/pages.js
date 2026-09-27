@@ -1048,3 +1048,246 @@ pageRender.classes = async (view) => {
     r.Referencia, r.URL ? [" ", h("a", { href: r.URL, target: "_blank", rel: "noopener" }, "link")] : null,
     h("br"), h("span", { class: "small muted" }, `Usado para: ${r.Uso}`))));
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Aprofundamento (análises complementares)
+// ─────────────────────────────────────────────────────────────────────────────
+pageRender.ciencia = async (view) => {
+  const S = await cached("/api/ciencia");
+  if (!S.repeatability.length) { view.replaceChildren(h("p", { class: "muted" }, "Rode python run.py complementares para gerar estas análises.")); return; }
+  const pct = (v) => `${fmt(v * 100, 0)}%`;
+  const pv = (p) => (p == null ? "–" : p < 0.001 ? "p < 0,001" : `p = ${fmt(p, 3)}`);
+  const fact = (n, l) => h("div", {}, h("div", { class: "n" }, n), h("div", { class: "l" }, l));
+  const MCOL = { SPAD: () => css("--ink"), Median_IPCA: () => css("--series-1"), Median_b_over_r: () => css("--series-2"), Median_SI: () => css("--series-3"), SPAD_rede: () => css("--neutral") };
+  const mColor = (m) => (MCOL[m] || (() => css("--neutral")))();
+  const LBL = { SPAD: "Falker", Median_IPCA: "Foto: IPCA", Median_b_over_r: "Foto: b/r", Median_SI: "Foto: SI", SPAD_rede: "Foto: rede neural" };
+
+  // índice
+  $("#sc-toc", view).replaceChildren(...["Ruído", "Concordância", "Dose ótima", "Nível crítico", "Clorofila a e b", "Uniformidade", "Dinâmica", "Planejamento"]
+    .map((t, i) => h("a", { href: "#/ciencia", onclick: (e) => { e.preventDefault(); $(`#sc-${i + 1}`, view).scrollIntoView({ behavior: "smooth" }); } }, `${i + 1}. ${t}`)));
+
+  // 1. repetibilidade
+  const R = S.repeatability, Rm = R.filter((r) => r.Data.startsWith("Média"));
+  const rF = Rm.find((r) => r.Medida === "SPAD"), rP = Rm.filter((r) => r.Medida !== "SPAD");
+  const bestP = rP.reduce((a, b) => (b.F_dose > a.F_dose ? b : a));
+  $("#sc-1-text", view).textContent = `Nas duas datas em que todas as parcelas foram fotografadas (21/05 e 26/05), a média da parcela pela foto tem confiabilidade `
+    + `${(() => { const lo = fmt(Math.min(...rP.map((r) => r.Confiabilidade_media)), 2), hi = fmt(Math.max(...rP.map((r) => r.Confiabilidade_media)), 2); return lo === hi ? lo : `${lo} a ${hi}`; })()}, contra ${fmt(rF.Confiabilidade_media, 2)} do Falker com 7 leituras. `
+    + `Uma única leitura do Falker explica ${pct(rF.ICC_uma_medida)} da diferença entre parcelas; um único recorte da foto, ${pct(bestP.ICC_uma_medida)}. `
+    + `E a foto separa as doses com F médio de ${fmt(bestP.F_dose, 1)} (${LBL[bestP.Medida]}), contra ${fmt(rF.F_dose, 1)} do SPAD. Em 18/05 só 7 parcelas têm foto, e o F fica instável.`;
+  const barItems = (key) => Rm.map((r) => ({ label: LBL[r.Medida], value: r[key], color: mColor(r.Medida), highlight: r.Medida === "SPAD" }));
+  registerChart("sc-1-rel", () => hbar($("#sc-1-rel", view), { xLabel: "confiabilidade (média 21/05 e 26/05)", valueFmt: (v) => fmt(v, 3), items: barItems("Confiabilidade_media") }));
+  registerChart("sc-1-f", () => hbar($("#sc-1-f", view), { xLabel: "F da dose (média 21/05 e 26/05)", valueFmt: (v) => fmt(v, 1), items: barItems("F_dose") }));
+  $("#sc-1-table", view).replaceChildren(localTable(["Data", "Rotulo", "n_parcelas", "k_por_parcela", "ICC_uma_medida", "Confiabilidade_media", "Meia_x_meia_corrigida", "F_dose", "p_dose", "eta2_dose"],
+    R.map((r) => ({ ...r, Data: r.Data.startsWith("Média") ? r.Data : shortDate(r.Data) })),
+    { formats: { k_por_parcela: 0, ICC_uma_medida: 3, Confiabilidade_media: 3, Meia_x_meia_corrigida: 3, F_dose: 1, p_dose: "p", eta2_dose: 2 },
+      labels: { Rotulo: "medida", n_parcelas: "parcelas", k_por_parcela: "medidas/parcela", ICC_uma_medida: "ICC (uma medida)", Confiabilidade_media: "confiabilidade da média",
+        Meia_x_meia_corrigida: "meia × meia", F_dose: "F dose", p_dose: "p", eta2_dose: "η² dose" } }));
+
+  // 2. Bland-Altman
+  const BA = S.bland_altman, ref = BA.find((r) => r.Metodo.startsWith("Falker"));
+  const baMethods = BA.filter((r) => !r.Metodo.startsWith("Falker")).map((r) => r.Metodo);
+  const drawBA = (mth) => {
+    const r = BA.find((x) => x.Metodo === mth), pts = S.bland_altman_points.filter((p) => p.Metodo === mth);
+    registerChart("sc-2-chart", () => scatter($("#sc-2-chart", view), {
+      points: pts.map((p) => ({ x: p.Media, y: p.Diferenca, color: dateColor(p.Data), label: `parcela ${p.Ponto} · ${shortDate(p.Data)}`, id: String(p.Ponto),
+        tip: [{ value: fmt(p.Falker, 1), label: "Falker" }, { value: fmt(p.Foto, 1), label: "foto" }] })),
+      xLabel: "média de foto e Falker (SPAD)", yLabel: "foto − Falker (SPAD)", height: 360, onClick: (p) => goPlot(p.id),
+      refLines: [{ value: r.Vies, label: `viés ${fmt(r.Vies, 1)}`, dash: false }, { value: r.LoA_sup, label: `+${fmt(r.LoA_sup, 1)}` }, { value: r.LoA_inf, label: fmt(r.LoA_inf, 1) },
+        { value: ref.LoA_sup, label: "Falker +" }, { value: ref.LoA_inf, label: "Falker −" }],
+      legendItems: DATES.map((d) => ({ name: shortDate(d), color: dateColor(d) })),
+    }));
+    $("#sc-2-text", view).textContent = `Viés geral ${fmt(r.Vies, 2)} SPAD (IC 95 % ${fmt(r.Vies_IC_min, 1)} a ${fmt(r.Vies_IC_max, 1)}): a foto não erra para um lado só. `
+      + `Mas 95 % das diferenças ficam entre ${fmt(r.LoA_inf, 1)} e ${fmt(r.LoA_sup, 1)} SPAD, contra ±${fmt(ref.LoA_sup, 1)} entre duas medições do próprio Falker. `
+      + `O viés muda com a data (18/05: ${fmt(r["Vies_18-05"], "+")}; 21/05: ${fmt(r["Vies_21-05"], "+")}; 26/05: ${fmt(r["Vies_26-05"], "+")}): tirando o viés de cada data, `
+      + `os limites caem para ±${fmt(r.LoA_dentro_da_data, 1)} SPAD. Sem viés proporcional (${pv(r.Vies_proporcional_p)}). Cor = data.`;
+  };
+  options($("#sc-2-method", view), baMethods.map((m) => [m, m]), drawBA, baMethods[0]);
+  $("#sc-2-table", view).replaceChildren(localTable(["Metodo", "n", "Vies", "LoA_inf", "LoA_sup", "Vies_18-05", "Vies_21-05", "Vies_26-05", "LoA_dentro_da_data", "Vies_proporcional_p"], BA,
+    { formats: { Vies: 2, LoA_inf: 1, LoA_sup: 1, "Vies_18-05": 1, "Vies_21-05": 1, "Vies_26-05": 1, LoA_dentro_da_data: 1, Vies_proporcional_p: "p" },
+      labels: { Metodo: "método", Vies: "viés", LoA_inf: "limite inferior", LoA_sup: "limite superior", "Vies_18-05": "viés 18/05", "Vies_21-05": "viés 21/05", "Vies_26-05": "viés 26/05",
+        LoA_dentro_da_data: "± sem o viés da data", Vies_proporcional_p: "p viés proporcional" } }));
+
+  // 3. dose-resposta
+  const measures = [...new Set(S.dose_response_means.map((r) => r.Medida))];
+  const drawDose = (d) => {
+    const rows = S.dose_response_means.filter((r) => r.Data === d);
+    registerChart("sc-3-chart", () => lineChart($("#sc-3-chart", view), {
+      series: measures.filter((m) => rows.some((r) => r.Medida === m)).map((m) => ({ name: LBL[m], color: mColor(m),
+        points: rows.filter((r) => r.Medida === m).map((r) => ({ x: r.Dose, y: r.Media_z, e: r.EP_z })) })),
+      xTicks: [0, 50, 75, 100], xLabel: "dose de N (kg/ha)", yLabel: "valor padronizado (desvios padrão)", height: 330, xFmt: (v) => `${v} kg`,
+    }));
+    const b = S.dose_response_best.filter((r) => r.Data === d);
+    const allLin = b.every((r) => r.Dose_otima == null);
+    $("#sc-3-text", view).textContent = (allLin
+      ? `Em ${shortDate(d)}, todas as medidas crescem em linha reta até 100 kg: nenhuma aponta dose ótima dentro das doses testadas, e a foto concorda com o Falker. `
+      : `Em ${shortDate(d)}: ${b.map((r) => `${LBL[r.Medida]} ${r.Resposta}`).join("; ")}. `)
+      + `R² do melhor modelo: Falker ${fmt(b.find((r) => r.Medida === "SPAD")?.R2, 2)}; foto ${fmt(Math.max(...b.filter((r) => r.Medida !== "SPAD").map((r) => r.R2)), 2)}. `
+      + `A barra vertical em cada ponto é o erro padrão entre os 3 blocos.`;
+  };
+  options($("#sc-3-date", view), DATES.map((d) => [d, shortDate(d)]), drawDose, "26-05-2026");
+  $("#sc-3-table", view).replaceChildren(localTable(["Data", "Rotulo", "n", "Melhor_modelo", "R2", "Resposta", "Prop_boot_com_otimo"],
+    S.dose_response_best.map((r) => ({ ...r, Data: shortDate(r.Data), Melhor_modelo: r.Melhor_modelo.replace("_", "-"), Prop_boot_com_otimo: r.Prop_boot_com_otimo * 100 })),
+    { formats: { R2: 2, Prop_boot_com_otimo: 0 }, labels: { Rotulo: "medida", Melhor_modelo: "melhor modelo (AICc)", R2: "R²", Resposta: "resposta", Prop_boot_com_otimo: "reamostragens com máximo (%)" } }));
+
+  // 4. nível crítico
+  const ys = [...new Set(S.critical_level.map((r) => r.Producao))], ms = [...new Set(S.critical_level.map((r) => r.Medida))];
+  let curY = ys[0], curM = "SPAD";
+  const lim = S.class_limits;
+  const drawCrit = () => {
+    const pts = S.critical_points.filter((p) => p.Producao === curY && p.Medida === curM);
+    const cn = S.critical_level.find((r) => r.Producao === curY && r.Medida === curM && r.Metodo === "Cate-Nelson");
+    const lp = S.critical_level.find((r) => r.Producao === curY && r.Medida === curM && r.Metodo === "Linear-platô");
+    $("#sc-4-title", view).textContent = `Produção relativa (${curY.toLowerCase()}) × ${LBL[curM]}`;
+    registerChart("sc-4-chart", () => scatter($("#sc-4-chart", view), {
+      points: pts.map((p) => ({ x: p.x_SPAD_equiv, y: p.Producao_relativa, color: doseColor(p.Dose), label: `parcela ${p.Ponto} (${p.Dose} kg N)`, id: String(p.Ponto), mark: `P${p.Ponto}` })),
+      xLabel: curM === "SPAD" ? "SPAD (Falker)" : `${LBL[curM]} convertida em SPAD`, yLabel: "produção relativa", height: 340, onClick: (p) => goPlot(p.id), yFmt: (v) => fmt(v, 1),
+      refLines: [{ axis: "x", value: cn.Nivel_critico_SPAD_equiv, label: `Cate-Nelson ${fmt(cn.Nivel_critico_SPAD_equiv, 1)}`, dash: false },
+        ...(lim.length ? [{ axis: "x", value: lim[0], label: `limite baixa/média ${fmt(lim[0], 1)}` }] : [])],
+      legendItems: [0, 50, 75, 100].map((d) => ({ name: `${d} kg N/ha`, color: doseColor(d) })),
+    }));
+    $("#sc-4-text", view).textContent = `Abaixo de ${fmt(cn.Nivel_critico_SPAD_equiv, 1)} SPAD, as ${cn.n_abaixo} parcelas produziram em média ${pct(cn.PR_media_abaixo)} da maior produção; acima, ${pct(cn.PR_media_acima)} `
+      + `(R² ${fmt(cn.R2, 2)}; IC 95 % ${fmt(cn.IC_min_SPAD_equiv, 1)} a ${fmt(cn.IC_max_SPAD_equiv, 1)}). O linear-platô põe o ponto de estabilização em ${fmt(lp.Nivel_critico_SPAD_equiv, 1)} SPAD. `
+      + (lim.length ? `O limite entre as classes "baixa" e "média" (${fmt(lim[0], 1)}) cai nessa mesma faixa: a classe baixa corresponde, na prática, às parcelas com produção menor.` : "");
+  };
+  options($("#sc-4-y", view), ys.map((y) => [y, y]), (v) => { curY = v; drawCrit(); }, curY);
+  options($("#sc-4-m", view), ms.map((m) => [m, LBL[m]]), (v) => { curM = v; drawCrit(); }, curM);
+  $("#sc-4-table", view).replaceChildren(localTable(["Producao", "Rotulo", "Metodo", "Nivel_critico_SPAD_equiv", "IC_min_SPAD_equiv", "IC_max_SPAD_equiv", "R2", "PR_media_abaixo", "PR_media_acima"],
+    S.critical_level.map((r) => ({ ...r, PR_media_abaixo: r.PR_media_abaixo * 100, PR_media_acima: r.PR_media_acima * 100 })),
+    { formats: { Nivel_critico_SPAD_equiv: 1, IC_min_SPAD_equiv: 1, IC_max_SPAD_equiv: 1, R2: 2, PR_media_abaixo: 0, PR_media_acima: 0 },
+      labels: { Producao: "produção", Rotulo: "medida", Metodo: "método", Nivel_critico_SPAD_equiv: "nível crítico (SPAD)", IC_min_SPAD_equiv: "IC mín.", IC_max_SPAD_equiv: "IC máx.",
+        R2: "R²", PR_media_abaixo: "produção abaixo (%)", PR_media_acima: "produção acima (%)" } }));
+  const cnF = S.critical_level.filter((r) => r.Medida === "SPAD");
+
+  // 5. clorofila a e b
+  const ab = S.ab_anova, abS = S.ab_summary.find((r) => r.Data === "Todas");
+  const ratioF = ab.filter((r) => r.Variavel === "Razão a/b");
+  const m0 = S.ab_means.filter((r) => r.Variavel === "Razão a/b" && r.Dose === 0), m100 = S.ab_means.filter((r) => r.Variavel === "Razão a/b" && r.Dose === 100);
+  const avg = (a) => a.reduce((s, r) => s + r.Media, 0) / a.length;
+  $("#sc-5-text", view).textContent = `O Falker separa o índice de clorofila a e o de b. A razão a/b cai com a adubação: de ${fmt(avg(m0), 2)} sem N para ${fmt(avg(m100), 2)} com 100 kg (média das datas), `
+    + `com efeito da dose em ${ratioF.filter((r) => r.p_dose < 0.05).length} das 3 datas (${ratioF.map((r) => `${shortDate(r.Data)}: F = ${fmt(r.F_dose, 1)}`).join("; ")}). Com mais N, a planta acumula `
+    + `proporcionalmente mais clorofila b. Já a foto não distingue uma da outra: a e b andam juntas entre parcelas (r = ${fmt(abS.r_a_b_parcelas, 2)}), e os índices da foto acompanham as duas quase igualmente `
+    + `(mediana de |r|: ${fmt(abS.Mediana_abs_r_a, 2)} com a, ${fmt(abS.Mediana_abs_r_b, 2)} com b).`;
+  registerChart("sc-5-chart", () => lineChart($("#sc-5-chart", view), {
+    series: DATES.map((d) => ({ name: shortDate(d), color: dateColor(d), points: S.ab_means.filter((r) => r.Data === d && r.Variavel === "Razão a/b").map((r) => ({ x: r.Dose, y: r.Media, e: r.EP })) })),
+    xTicks: [0, 50, 75, 100], xLabel: "dose de N (kg/ha)", yLabel: "razão a/b", height: 300, xFmt: (v) => `${v} kg`,
+  }));
+  $("#sc-5-table", view).replaceChildren(localTable(["Data", "Variavel", "F_dose", "p_dose", "eta2_dose"], ab.map((r) => ({ ...r, Data: shortDate(r.Data) })),
+    { formats: { F_dose: 1, p_dose: "p", eta2_dose: 2 }, labels: { Variavel: "variável", F_dose: "F dose", p_dose: "p", eta2_dose: "η²" } }));
+
+  // 6. heterogeneidade
+  const HT = S.heterogeneity_tests, hp = S.heterogeneity_plots;
+  const tCV = HT.find((r) => r.Medida === "CV_b_over_r" && r.Data === "Todas"), tF = HT.find((r) => r.Medida === "SPAD_cv" && r.Data === "Todas");
+  $("#sc-6-text", view).textContent = `A foto mede a variação de cor entre os milhares de blocos de cada parcela; o Falker, entre 7 folhas. Pela foto, parcelas sem N são claramente mais desuniformes: `
+    + `CV de b/r de ${fmt(tCV.Media_0kg, 1)}% sem N contra ${fmt(tCV.Media_100kg, 1)}% com 100 kg (Spearman com a dose ${fmt(tCV.rho_dose, 2)}; ${pv(tCV.p_rho_dose)}). `
+    + `O Falker não vê essa diferença: o CV das 7 leituras vai de ${fmt(tF.Media_0kg, 1)}% a ${fmt(tF.Media_100kg, 1)}% (${pv(tF.p_rho_dose)}), e não se correlaciona com a variação da foto `
+    + `(Spearman ${fmt(tCV.rho_com_Falker_dp, 2)}). Parte do efeito na foto vem da cobertura menor das parcelas sem N (Spearman com a cobertura ${fmt(tCV.rho_com_cobertura, 2)}), com mais blocos na borda entre folha e solo.`;
+  const hetLine = (el, key) => registerChart(el, () => lineChart($(`#${el}`, view), {
+    series: DATES.map((d) => ({ name: shortDate(d), color: dateColor(d), points: [0, 50, 75, 100].map((dose) => {
+      const v = hp.filter((r) => r.Data === d && r.Dose === dose && r[key] != null).map((r) => r[key]);
+      return v.length ? { x: dose, y: v.reduce((a, b) => a + b, 0) / v.length, e: v.length > 1 ? Math.sqrt(v.reduce((a, b) => a + (b - v.reduce((x, y) => x + y, 0) / v.length) ** 2, 0) / (v.length - 1) / v.length) : 0 } : null;
+    }).filter(Boolean) })), xTicks: [0, 50, 75, 100], xLabel: "dose de N (kg/ha)", yLabel: "CV (%)", height: 280, xFmt: (v) => `${v} kg`,
+  }));
+  hetLine("sc-6-photo", "CV_b_over_r"); hetLine("sc-6-falker", "SPAD_cv");
+  $("#sc-6-table", view).replaceChildren(localTable(["Rotulo", "Data", "n", "Media_0kg", "Media_100kg", "rho_dose", "p_rho_dose", "rho_com_Falker_dp"], HT.filter((r) => r.Data === "Todas"),
+    { formats: { Media_0kg: 3, Media_100kg: 3, rho_dose: 2, p_rho_dose: "p", rho_com_Falker_dp: 2 },
+      labels: { Rotulo: "medida", Data: "datas", Media_0kg: "sem N", Media_100kg: "100 kg", rho_dose: "Spearman com a dose", p_rho_dose: "p", rho_com_Falker_dp: "Spearman com o desvio do Falker" } }));
+
+  // 7. dinâmica
+  const TT = S.temporal_tests, tt = (s) => TT.find((r) => r.Teste.startsWith(s));
+  const inter = tt("Interação"), dat = tt("Efeito da data"), dos = tt("Efeito da dose"), tAlt = tt("Taxa × altura"), tMas = tt("Taxa × massa");
+  const sl = S.temporal_slopes, byDose = [0, 50, 75, 100].map((d) => sl.filter((r) => r.Dose === d).reduce((a, r, _, arr) => a + r.Variacao_total / arr.length, 0));
+  $("#sc-7-text", view).textContent = `Entre 18/05 e 26/05 o SPAD caiu em todas as doses (efeito da data: ${pv(dat.p)}), de ${fmt(Math.max(...byDose.map(Math.abs)), 1)} SPAD sem N a cerca de ${fmt(Math.min(...byDose.map(Math.abs)), 1)} nas demais. `
+    + `A diferença entre doses se mantém (efeito da dose: ${pv(dos.p)}), e o modelo misto não detecta interação dose × data (${pv(inter.p)}): a queda foi parecida em todas as doses. `
+    + `Não parece diluição do N no crescimento: as parcelas mais altas em 26/05 perderam menos clorofila, e não mais (Spearman da taxa com a altura ${fmt(tAlt.Estatistica, 2)}, ${pv(tAlt.p)}; com a massa ${fmt(tMas.Estatistica, 2)}, ${pv(tMas.p)}). `
+    + `A foto também não mostra diferença de variação entre doses de 21/05 para 26/05.`;
+  registerChart("sc-7-chart", () => lineChart($("#sc-7-chart", view), {
+    series: [0, 50, 75, 100].map((d) => ({ name: `${d} kg`, color: doseColor(d), points: S.temporal_means.filter((r) => r.Medida === "SPAD" && r.Dose === d).map((r) => ({ x: r.Dia, y: r.Media, e: r.EP })) })),
+    xTicks: [...new Set(S.temporal_means.filter((r) => r.Medida === "SPAD").map((r) => r.Dia))].sort((a, b) => a - b),
+    xLabel: "dias desde 18/05", yLabel: "SPAD médio", height: 320, xFmt: (v) => ({ 0: "18/05", 3: "21/05", 8: "26/05" }[v] ?? v),
+  }));
+  $("#sc-7-table", view).replaceChildren(localTable(["Teste", "Estatistica", "GL", "p"], TT.filter((r) => r.p != null),
+    { formats: { Estatistica: 2, GL: 0, p: "p" }, labels: { Teste: "teste", Estatistica: "estatística (χ², F ou ρ)", GL: "GL" } }));
+
+  // 8. planejamento
+  const PC = S.plan_ceiling, PR = S.plan_readings, PB = S.plan_blocks, PS = S.plan_sensitivity, PD = S.plan_dates;
+  const c7 = PC.find((r) => r.Leituras === 7), c28 = PC.find((r) => r.Leituras === 28);
+  const b25F = PB.find((r) => r.Unidade === "dose" && r.Cenario.startsWith("Falker") && r.Diferenca.startsWith("25"));
+  const b25P = PB.find((r) => r.Unidade === "dose" && r.Cenario.startsWith("Foto") && r.Diferenca.startsWith("25"));
+  const sF = PS.find((r) => r.Medida === "SPAD"), sP = PS.find((r) => r.Medida !== "SPAD");
+  const vp = PB[0]?.Variancia_entre_parcelas, vf = PB[0]?.Variancia_folhas;
+  $("#sc-8-text", view).textContent = `As folhas de uma parcela variam ±${fmt(PR[0].DP_entre_folhas, 1)} SPAD. Com 7 leituras, a média tem incerteza de ±${fmt(c7.IC95_meia_largura, 1)} e só ${pct(c7.Parcelas_com_classe_segura)} das parcelas `
+    + `têm classe segura; com 28, ±${fmt(c28.IC95_meia_largura, 1)} e ${pct(c28.Parcelas_com_classe_segura)} (teto de acerto de classe de ${pct(c7.Teto_classe_exata)} para ${pct(c28.Teto_classe_exata)}). `
+    + `Mais leituras deixam a classe mais segura, mas quase não ajudam a separar doses: a variação real entre parcelas (${fmt(vp, 1)} SPAD²) é muito maior que o ruído da média de 7 folhas (${fmt(vf / 7, 1)} SPAD²).`;
+  registerChart("sc-8-chart", () => lineChart($("#sc-8-chart", view), {
+    series: [{ name: "teto de acerto", color: css("--series-1"), points: PC.map((r) => ({ x: r.Leituras, y: r.Teto_classe_exata * 100 })) },
+      { name: "classe segura", color: css("--series-2"), points: PC.map((r) => ({ x: r.Leituras, y: r.Parcelas_com_classe_segura * 100 })) }],
+    xTicks: PC.map((r) => r.Leituras), xLabel: "leituras do Falker por parcela", yLabel: "% das parcelas", height: 280,
+  }));
+  $("#sc-8-readings", view).replaceChildren(localTable(["Margem_SPAD", "Leituras_necessarias"], PR,
+    { formats: { Margem_SPAD: 1 }, labels: { Margem_SPAD: "margem (± SPAD)", Leituras_necessarias: "leituras por parcela" } }));
+  $("#sc-8-blocks", view).replaceChildren(localTable(["Cenario", "Diferenca", "Sigma_residual", "Blocos_necessarios", "Poder"], PB,
+    { formats: { Sigma_residual: 2, Blocos_necessarios: 0, Poder: 2 }, labels: { Cenario: "cenário", Diferenca: "diferença a detectar", Sigma_residual: "desvio residual", Blocos_necessarios: "blocos", Poder: "poder" } }));
+  $("#sc-8-blocks-text", view).textContent = `Hoje são 3 blocos. Para detectar 25 kg de N de diferença entre duas doses seriam ${b25F.Blocos_necessarios} blocos com o Falker e ${b25P.Blocos_necessarios} com a foto: `
+    + `a foto tem mais sinal por unidade de ruído (razão sinal/ruído para 100 kg: ${fmt(sP.Razao_sinal_ruido_100kg, 1)} contra ${fmt(sF.Razao_sinal_ruido_100kg, 1)}). Em SPAD, detectar 1 SPAD exigiria mais de 60 blocos. "–" = mais de 60.`;
+  $("#sc-8-dates", view).replaceChildren(localTable(["Datas_no_treino", "Combinacoes", "R2_na_data_nova_medio", "Erro_medio_SPAD", "Acerto_classe_medio"], PD.map((r) => ({ ...r, Acerto_classe_medio: r.Acerto_classe_medio * 100 })),
+    { formats: { R2_na_data_nova_medio: 2, Erro_medio_SPAD: 2, Acerto_classe_medio: 0 },
+      labels: { Datas_no_treino: "datas no treino", Combinacoes: "combinações testadas", R2_na_data_nova_medio: "R² na data nova", Erro_medio_SPAD: "erro médio (SPAD)", Acerto_classe_medio: "acerto de classe (%)" } }));
+  const d1 = PD.find((r) => r.Datas_no_treino === 1), d2 = PD.find((r) => r.Datas_no_treino === 2);
+  $("#sc-8-dates-text", view).textContent = `Reta no IPCA treinada com uma data ou com duas, e testada numa data que não entrou no treino. Com duas datas o acerto de classe sobe de ${pct(d1.Acerto_classe_medio)} `
+    + `para ${pct(d2.Acerto_classe_medio)}, mas o R² não melhora (${fmt(d1.R2_na_data_nova_medio, 2)} e ${fmt(d2.R2_na_data_nova_medio, 2)}). Com só três datas não dá para traçar uma curva; o que dá para dizer é que `
+    + `cada data nova traz uma condição de luz nova, e só mais datas (ou uma referência fotografada no dia) resolvem o erro de nível entre coletas.`;
+
+  // em poucas palavras: as mesmas conclusões, em linguagem simples
+  const baMain = BA.find((r) => r.Metodo === baMethods[0]);
+  const noOptimum = S.dose_response_best.every((r) => r.Dose_otima == null);
+  const cnMain = cnF.find((r) => r.Metodo === "Cate-Nelson");
+  const cnPhoto = S.critical_level.filter((r) => r.Medida !== "SPAD" && r.Metodo === "Cate-Nelson" && r.Producao === cnMain.Producao);
+  const cnPhotoMean = cnPhoto.reduce((a, r) => a + r.Nivel_critico_SPAD_equiv, 0) / cnPhoto.length;
+  const drop = byDose.map(Math.abs);
+  const r1 = PR.find((r) => r.Margem_SPAD === 1);
+  const PLAIN = [
+    ["Quem mede com menos \"tremedeira\": a foto ou o Falker?",
+      `A foto. O Falker mede 7 folhas, e cada folha dá um valor diferente; a foto olha milhares de pedacinhos da parcela de uma vez, e a média fica mais estável. `
+      + `Por isso ela enxerga a diferença entre as doses de adubo com um sinal ${fmt(bestP.F_dose / rF.F_dose, 1)} vezes mais forte.`],
+    ["A foto e o Falker dão o mesmo número?",
+      `Na média, sim: a foto não erra sempre para o mesmo lado. Mas numa parcela a diferença pode chegar a ${fmt(Math.max(Math.abs(baMain.LoA_inf), baMain.LoA_sup), 0)} pontos de SPAD, `
+      + `e o próprio Falker, medindo a mesma parcela de novo, varia uns ${fmt(ref.LoA_sup, 0)}. Boa parte do erro vem do dia: numa data a foto ficou toda um pouco abaixo, em outra toda um pouco acima.`],
+    ["Qual a melhor dose de adubo?",
+      noOptimum
+        ? "Nenhuma dose foi demais: quanto mais adubo, mais verde, até os 100 kg. O capim ainda não parou de responder, então a dose ideal fica acima de 100 kg. A foto e o Falker concordam nisso."
+        : `As medidas não concordam em todas as datas: ${S.dose_response_best.filter((r) => r.Dose_otima != null).map((r) => `${LBL[r.Medida]} em ${shortDate(r.Data)}: ${r.Resposta}`).join("; ")}.`],
+    ["Abaixo de que valor a produção cai?",
+      `Por volta de ${fmt(cnMain.Nivel_critico_SPAD_equiv, 0)} SPAD. As parcelas abaixo disso produziram ${pct(cnMain.PR_media_abaixo)} do máximo; as de cima, ${pct(cnMain.PR_media_acima)}. `
+      + `A foto chega a um número parecido (${fmt(cnPhotoMean, 0)})`
+      + (lim.length ? `, e ele praticamente coincide com o limite da classe "baixa" (${fmt(lim[0], 1)}): a classe baixa é um sinal de alerta de verdade.` : ".")],
+    ["Clorofila a e clorofila b",
+      `Com mais adubo, a planta fica com proporcionalmente mais clorofila b: a razão a/b cai de ${fmt(avg(m0), 1)} (sem adubo) para ${fmt(avg(m100), 1)} (100 kg). `
+      + "A foto não separa uma da outra, porque as duas sobem e descem juntas."],
+    ["A parcela é uniforme?",
+      `Sem adubo, a parcela fica manchada: umas partes verdes, outras amareladas (variação de cor de ${fmt(tCV.Media_0kg, 0)}% contra ${fmt(tCV.Media_100kg, 0)}% com 100 kg). `
+      + "A foto enxerga essas manchas; o Falker, com só 7 folhas, não. É uma informação que só a foto dá."],
+    ["O que mudou entre as coletas?",
+      `A clorofila caiu em todas as parcelas em 8 dias (de ${fmt(Math.min(...drop), 1)} a ${fmt(Math.max(...drop), 1)} pontos), quase igual em todas as doses. `
+      + "As que mais cresceram até perderam menos, então não parece ser o nitrogênio \"espalhado\" no crescimento. Deve ser algo geral, como a idade das folhas ou o clima."],
+    ["Como fazer a próxima coleta melhor?",
+      `Com o Falker, seriam umas ${r1 ? r1.Leituras_necessarias : 30} leituras por parcela (e não 7) para o valor ficar confiável (±1 ponto). `
+      + `Para provar uma diferença de 25 kg de adubo, seriam ${b25F.Blocos_necessarios} repetições com o Falker, mas só ${b25P.Blocos_necessarios} com a foto (hoje são 3). `
+      + "Mais datas e um cartão de cor nas fotos resolveriam o problema da luz de cada dia."],
+  ];
+  $("#sc-plain-grid", view).replaceChildren(...PLAIN.map(([q, a], i) => h("button", {
+    type: "button", class: "plain-card", onclick: () => $(`#sc-${i + 1}`, view).scrollIntoView({ behavior: "smooth" }) },
+    h("span", { class: "plain-q" }, `${i + 1}. ${q}`), h("span", { class: "plain-a" }, a), h("span", { class: "plain-more" }, "ver os detalhes ↓"))));
+  PLAIN.forEach(([, a], i) => { const el = $(`#sc-${i + 1}-plain`, view); if (el) el.replaceChildren(h("strong", {}, "Em resumo: "), a); });
+  $("#sc-plain-bottom", view).replaceChildren(h("strong", {}, "Resumindo: "),
+    "a foto separa bem o que é mais e menos adubado, mostra coisas que o Falker não vê (as manchas) e aponta o mesmo limite de produção. "
+    + "O ponto fraco é que o valor dela muda com a luz de cada dia; é isso que a próxima coleta precisa resolver.");
+
+  // destaques
+  $("#sc-facts", view).replaceChildren(
+    fact(`${fmt(bestP.F_dose, 0)} × ${fmt(rF.F_dose, 0)}`, "F da dose: foto × Falker (a foto separa melhor os tratamentos)"),
+    fact(`±${fmt(BA.find((r) => r.Metodo === baMethods[0]).LoA_sup, 1)}`, "SPAD: limites de concordância foto × Falker"),
+    fact(`${fmt(cnF.find((r) => r.Metodo === "Cate-Nelson").Nivel_critico_SPAD_equiv, 1)}`, "SPAD crítico para a produção (Cate-Nelson, Falker)"),
+    fact(`${b25P.Blocos_necessarios} × ${b25F.Blocos_necessarios}`, "blocos para detectar 25 kg de N: foto × Falker"));
+
+  $("#sc-refs", view).replaceChildren(...S.references.map((r) => h("p", {}, r)));
+};

@@ -1,0 +1,1 @@
+{"table":"sci_plan_sensitivity","columns":["run_id","Medida","Inclinacao_por_kg","Sigma_residual","Razao_sinal_ruido_100kg"],"rows":[[81,"SPAD",0.085181,2.61457,3.25793],[81,"Median_IPCA",0.00100181,0.0189066,5.29874]],"has_run":true}

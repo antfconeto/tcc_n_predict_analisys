@@ -194,6 +194,21 @@ Nenhum método troca baixa por alta. A busca da MLP está em `pipeline/explorato
 (`python run.py mlp_class_search`, ~3 min; rode `chl_classes` de novo depois para incluí-la). Tabelas `chl_class_*`
 e `mlp_class_*`; página **Classes** do site.
 
+## Análises complementares (`python run.py complementares`)
+
+Scripts em `pipeline/07_analises_complementares/`, tabelas `sci_*`, página **Aprofundamento** do site.
+
+| # | Pergunta | Resultado |
+| :--- | :--- | :--- |
+| 1 | A foto mede a parcela com menos ruído? (ICC, Shrout e Fleiss, 1979) | Confiabilidade da média: foto 0,97 × Falker 0,94; F da dose ~16 × ~6 (21/05 e 26/05). Recortes da mesma foto compartilham a luz: favorece um pouco a foto. |
+| 2 | Foto e Falker concordam? (Bland e Altman, 1986) | Sem viés geral (≈ 0), mas limites de ±5 SPAD (Falker × Falker: ±2,7). Viés por data de −1,6 (21/05) a +1,2 (26/05); sem ele, ±4,6. |
+| 3 | A foto aponta a mesma dose ótima? | Nenhuma medida atinge máximo até 100 kg N: resposta linear (AICc) no Falker e na foto, nas três datas. Em 26/05 a foto explica melhor a dose (R² 0,82 × 0,66). |
+| 4 | Qual clorofila limita a produção? (Cate e Nelson, 1971; 26/05) | Nível crítico 34,7 SPAD (Falker) e 34,1–34,4 pela foto (em SPAD equivalente); coincide com o limite baixa/média das classes (35,6). Com 12 parcelas, indicativo. |
+| 5 | Clorofila a × b | A razão a/b cai com o N (4,1 → 3,4); F = 12 em 26/05. A foto não separa a de b (r = 0,95 entre elas). |
+| 6 | Heterogeneidade dentro da parcela | Pela foto, parcelas sem N são mais desuniformes (CV de b/r 28,5 % × 18,4 %; ρ = −0,68). O Falker (7 folhas) não detecta; parte do efeito vem da cobertura menor. |
+| 7 | Dinâmica entre coletas (modelo misto) | O SPAD caiu 4–5,6 em 8 dias em todas as doses; sem interação dose × data (p = 0,14). Parcelas mais altas perderam menos: não é diluição. |
+| 8 | Planejamento | 29 leituras/parcela para ±1 SPAD; 28 leituras levam o teto de classe de 80 % a 89 %. Para detectar 25 kg N: 10 blocos com a foto × 25 com o Falker. |
+
 ## Site estático (GitHub Pages)
 
 `python run.py build` gera em `dist/` uma versão do site que não precisa de servidor nem API: o próprio servidor é

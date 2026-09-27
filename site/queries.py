@@ -788,7 +788,8 @@ DOWNLOAD_CATEGORIES = [
     ("Índices da imagem", "Os índices extraídos de cada foto e dos mapas."),
     ("Clorofila: modelos e validação", "Fórmulas, validação cruzada, modelo definitivo e estudo de iluminação."),
     ("Análise por coleta", "Correlações e ANOVA dentro de cada data."),
-    ("Classes de clorofila", "Classes muito baixa → muito alta pelas faixas de Beaufils sobre o SPAD, medidas e pela foto."),
+    ("Classes de clorofila", "Classes baixa, média e alta pelas faixas de Beaufils sobre o SPAD, medidas e pela foto."),
+    ("Análises complementares", "Repetibilidade, concordância, dose ótima, nível crítico, clorofila a × b, heterogeneidade, dinâmica e planejamento."),
     ("Altura e biomassa", "Regressões e busca de modelos para altura e massa."),
     ("App", "Validação do app, pesos do modelo e comparação com o Falker."),
     ("Buscas exploratórias", "Varreduras de pré-processamento e de fórmulas."),
@@ -807,6 +808,8 @@ def download_category(name: str) -> str:
         return "Análise por coleta"
     if name.startswith("chl_class_"):
         return "Classes de clorofila"
+    if name.startswith("sci_"):
+        return "Análises complementares"
     if name.startswith("anova"):
         return "ANOVA"
     if name in {"image_indices", "mapping_images_summary"}:
@@ -849,3 +852,31 @@ def chl_classes() -> dict:
         return [] if df is None else [{k: _clean(v) for k, v in r.items()} for r in df.to_dict("records")]
     return {name: rows(f"chl_class_{name}") for name in ("scheme", "references", "distribution", "plots", "validation",
                                                          "index_ranking", "agreement", "confusion", "scheme_comparison")}
+
+
+SCIENCE_TABLES = ["repeatability", "bland_altman", "bland_altman_points", "dose_response_best", "dose_response_means",
+                  "critical_level", "critical_points", "ab_anova", "ab_means", "ab_summary", "heterogeneity_plots",
+                  "heterogeneity_tests", "temporal_means", "temporal_tests", "temporal_slopes", "plan_readings",
+                  "plan_ceiling", "plan_blocks", "plan_sensitivity", "plan_dates"]
+SCIENCE_REFERENCES = [
+    "SHROUT, P. E.; FLEISS, J. L. Intraclass correlations: uses in assessing rater reliability. Psychological Bulletin, "
+    "v. 86, n. 2, p. 420-428, 1979. DOI: 10.1037/0033-2909.86.2.420.",
+    "BLAND, J. M.; ALTMAN, D. G. Statistical methods for assessing agreement between two methods of clinical measurement. "
+    "The Lancet, v. 327, n. 8476, p. 307-310, 1986.",
+    "CATE, R. B.; NELSON, L. A. A simple statistical procedure for partitioning soil test correlation data into two classes. "
+    "Soil Science Society of America Proceedings, v. 35, n. 4, p. 658-660, 1971. DOI: 10.2136/sssaj1971.03615995003500040048x.",
+    "BEAUFILS, E. R. Diagnosis and recommendation integrated system (DRIS). Pietermaritzburg: University of Natal, 1973. "
+    "(Soil Science Bulletin, 1).",
+]
+
+
+def science() -> dict:
+    """Análises complementares (pipeline/07_analises_complementares)."""
+    out = {}
+    for name in SCIENCE_TABLES:
+        df = try_latest(f"sci_{name}")
+        out[name] = [] if df is None else [{k: _clean(v) for k, v in r.items()} for r in df.to_dict("records")]
+    lim = try_latest("chl_class_scheme")
+    out["class_limits"] = [] if lim is None else [_clean(v) for v in lim.sort_values("Ordem").SPAD_max.dropna().tolist()]
+    out["references"] = SCIENCE_REFERENCES
+    return out

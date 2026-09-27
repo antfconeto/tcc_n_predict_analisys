@@ -71,6 +71,15 @@ STEPS = [
     ("validate_aligned", "06_validacao_app/03_validate_aligned_pipeline.py", "Pipeline alinhado (com e sem crop)"),
     ("validate_stages", "06_validacao_app/04_validate_pipeline_stages.py", "Validação etapa a etapa"),
     ("app_vs_falker", "06_validacao_app/05_app_vs_falker.py", "Predição do app × Falker (JSON de debug)"),
+    ("sci_units", "07_analises_complementares/01_photo_units.py", "Índices por recorte 3×3 e heterogeneidade entre blocos"),
+    ("sci_repeatability", "07_analises_complementares/02_repeatability.py", "Repetibilidade: foto × Falker (ICC, meia × meia)"),
+    ("sci_bland_altman", "07_analises_complementares/03_bland_altman.py", "Concordância foto × Falker (Bland-Altman)"),
+    ("sci_dose_response", "07_analises_complementares/04_dose_response.py", "Resposta à dose e dose ótima: foto × Falker"),
+    ("sci_critical", "07_analises_complementares/05_critical_level.py", "Nível crítico de clorofila para a produção (Cate-Nelson)"),
+    ("sci_ab", "07_analises_complementares/06_chlorophyll_ab.py", "Clorofila a × b e razão a/b"),
+    ("sci_heterogeneity", "07_analises_complementares/07_heterogeneity.py", "Heterogeneidade dentro da parcela"),
+    ("sci_temporal", "07_analises_complementares/08_temporal.py", "Dinâmica entre as datas (modelo misto)"),
+    ("sci_planning", "07_analises_complementares/09_planning.py", "Planejamento da próxima coleta"),
     # Exploratórios: buscas de hiperparâmetros/alternativas que não entraram no modelo final.
     # Não fazem parte de `all`; os resultados da execução original estão em legacy__*.
     ("preprocess_search", "exploratorio/01_preprocess_search.py", "[exp] Busca de pré-processamento (36 variantes)"),
@@ -90,6 +99,7 @@ GROUPS = {
     "setup": ["init_db", "import_legacy"],
     "all": [alias for alias, _, _ in STEPS if alias != "import_legacy" and alias not in EXPLORATORY],
     "exploratorio": EXPLORATORY,
+    "complementares": [alias for alias, script, _ in STEPS if script.startswith("07_analises_complementares/")],
 }
 
 
