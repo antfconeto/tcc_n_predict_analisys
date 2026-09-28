@@ -1291,3 +1291,185 @@ pageRender.ciencia = async (view) => {
 
   $("#sc-refs", view).replaceChildren(...S.references.map((r) => h("p", {}, r)));
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Explorações (scripts 10–16 das análises complementares)
+// ─────────────────────────────────────────────────────────────────────────────
+pageRender.exploracoes = async (view) => {
+  const E = await cached("/api/exploracoes");
+  if (!E.saturation.length) { view.replaceChildren(h("p", { class: "muted" }, "Rode python run.py complementares para gerar estas análises.")); return; }
+  const pct = (v) => `${fmt(v * 100, 0)}%`;
+  const pv = (p) => (p == null ? "–" : p < 0.001 ? "p < 0,001" : `p = ${fmt(p, 3)}`);
+  const sig = (p) => p != null && p < 0.05;
+  const txt = (id, s) => { $(`#${id}`, view).textContent = s; };
+  const table = (id, cols, rows, opts) => $(`#${id}`, view).replaceChildren(localTable(cols, rows, opts));
+  const plain = [];
+
+  // 1. partição
+  const P = E.partition, pf = P.find((r) => r.Variavel === "Fracao_folha_seca"), pms = P.find((r) => r.Variavel === "MS_amostra_pct");
+  const anySig = P.some((r) => sig(r.p_dose));
+  plain.push(anySig ? "O nitrogênio mudou a proporção entre folha e colmo ou o teor de matéria seca." :
+    `Não: com ou sem adubo, a massa seca ficou em torno de ${fmt(pf.Media_0kg * 100, 0)}–${fmt(pf.Media_100kg * 100, 0)}% de folha e o capim teve ~${fmt(pms.Media_0kg, 0)}% de matéria seca. O adubo aumentou a produção sem mudar a "receita" da planta.`);
+  txt("ex-1-text", `Com a massa verde e seca da amostra de cada parcela (26/05), calculou-se a fração de folha na massa e o teor de matéria seca (massa seca ÷ massa verde) `
+    + `de folha, colmo e da amostra inteira. Nenhuma dessas variáveis mudou com a dose na ANOVA em blocos (menor p: ${fmt(Math.min(...P.map((r) => r.p_dose)), 2)}). `
+    + `Com 3 blocos só diferenças grandes seriam detectadas, mas as médias também não mostram tendência consistente.`);
+  table("ex-1-table", ["Rotulo", "Media_0kg", "Media_50kg", "Media_75kg", "Media_100kg", "F_dose", "p_dose"],
+    P.map((r) => r.Variavel.startsWith("Fracao") ? { ...r, Media_0kg: r.Media_0kg * 100, Media_50kg: r.Media_50kg * 100, Media_75kg: r.Media_75kg * 100, Media_100kg: r.Media_100kg * 100, Rotulo: `${r.Rotulo} (%)` } : r),
+    { formats: { Media_0kg: 1, Media_50kg: 1, Media_75kg: 1, Media_100kg: 1, F_dose: 2, p_dose: "p" },
+      labels: { Rotulo: "variável", Media_0kg: "0 kg", Media_50kg: "50 kg", Media_75kg: "75 kg", Media_100kg: "100 kg", F_dose: "F dose", p_dose: "p" } });
+
+  // 2. saturação
+  const S = E.saturation, sS = S.find((r) => r.Variavel === "SPAD"), sM = S.find((r) => r.Variavel === "Massa_Seca_Total_ha"), sD = S.find((r) => r.Variavel === "diferenca");
+  const massFirst = sD.Fracao_do_ganho_50kg < 0;
+  plain.push(massFirst
+    ? `Ao contrário: é a produção que satura primeiro. Com 50 kg de N a massa já tinha ${pct(sM.Fracao_do_ganho_50kg)} do ganho que teve com 100 kg; a clorofila, só ${pct(sS.Fracao_do_ganho_50kg)}. Depois de ~50 kg, o N extra vai para a folha ficar mais verde, não para crescer mais.`
+    : `Sim: com 50 kg a clorofila já tinha ${pct(sS.Fracao_do_ganho_50kg)} do ganho, e a massa ${pct(sM.Fracao_do_ganho_50kg)}.`);
+  const BP = E.biomass_plots, doses = [0, 50, 75, 100];
+  const rel = (col) => {
+    const m = doses.map((d) => { const v = BP.filter((r) => r.Dose === d).map((r) => r[col]); return v.reduce((a, b) => a + b, 0) / v.length; });
+    return doses.map((d, i) => ({ x: d, y: 100 * (m[i] - m[0]) / (m[3] - m[0]) }));
+  };
+  const series = [["SPAD", "SPAD (clorofila)", css("--ink")], ["Massa_Seca_Total_ha", "Massa seca total", css("--series-1")],
+    ["Massa_Seca_Folha_ha", "Massa seca de folha", css("--series-3")], ["Altura_Media", "Altura", css("--series-2")]];
+  registerChart("ex-2-chart", () => lineChart($("#ex-2-chart", view), {
+    series: series.map(([c, n, col]) => ({ name: n, color: col, points: rel(c) })),
+    xTicks: doses, xLabel: "dose de N (kg/ha)", yLabel: "% do ganho de 0 a 100 kg", height: 300, xFmt: (v) => `${v} kg`,
+  }), { columns: ["Rotulo", "Ganho_0_100", "Fracao_do_ganho_50kg", "IC50_min", "IC50_max", "Fracao_do_ganho_75kg", "p_termo_quadratico"], rows: S.filter((r) => r.Variavel !== "diferenca"),
+    formats: { Ganho_0_100: 2, Fracao_do_ganho_50kg: 2, IC50_min: 2, IC50_max: 2, Fracao_do_ganho_75kg: 2, p_termo_quadratico: "p" } });
+  txt("ex-2-text", `Para cada variável, o ganho de 0 a 100 kg vale 100 %, e o gráfico mostra quanto dele já estava presente em cada dose (26/05). `
+    + `A massa seca total chegou a ${pct(sM.Fracao_do_ganho_50kg)} com 50 kg (IC 95 % ${pct(sM.IC50_min)} a ${pct(sM.IC50_max)}); o SPAD, a ${pct(sS.Fracao_do_ganho_50kg)} `
+    + `(${pct(sS.IC50_min)} a ${pct(sS.IC50_max)}). Reamostrando as parcelas, a massa satura antes da clorofila em ${pct(1 - sD.Prob_SPAD_satura_antes)} das vezes. `
+    + `É o padrão do "consumo de luxo": acima da dose que maximiza o crescimento, a planta continua acumulando N e clorofila na folha. Uma data e 3 blocos: vale confirmar.`);
+  table("ex-2-table", ["Rotulo", "Fracao_do_ganho_50kg", "Fracao_do_ganho_75kg", "Curvatura_relativa", "p_termo_quadratico"], S.filter((r) => r.Variavel !== "diferenca").map((r) => ({ ...r, Fracao_do_ganho_50kg: r.Fracao_do_ganho_50kg * 100, Fracao_do_ganho_75kg: r.Fracao_do_ganho_75kg * 100 })),
+    { formats: { Fracao_do_ganho_50kg: 0, Fracao_do_ganho_75kg: 0, Curvatura_relativa: 2, p_termo_quadratico: "p" },
+      labels: { Rotulo: "variável", Fracao_do_ganho_50kg: "% do ganho com 50 kg", Fracao_do_ganho_75kg: "% com 75 kg", Curvatura_relativa: "curvatura", p_termo_quadratico: "p (curvatura)" } });
+
+  // 3. eficiência do N
+  const N = E.nue, eff = N.filter((r) => r.Tipo.startsWith("eficiência") && r.Producao === "Massa_Seca_Total_ha"), marg = N.filter((r) => r.Tipo.startsWith("retorno") && r.Producao === "Massa_Seca_Total_ha");
+  plain.push(`Cada kg de N rendeu ${fmt(eff[0].Eficiencia_media, 0)} kg de massa seca com 50 kg, ${fmt(eff[1].Eficiencia_media, 0)} com 75 e ${fmt(eff[2].Eficiencia_media, 0)} com 100: retorno decrescente. De 75 para 100 kg, a massa praticamente não aumentou.`);
+  registerChart("ex-3-chart", () => hbar($("#ex-3-chart", view), { xLabel: "kg de massa seca por kg de N (média dos 3 blocos)", valueFmt: (v) => fmt(v, 1),
+    items: eff.map((r) => ({ label: `${r.Dose} kg de N`, value: r.Eficiencia_media, color: doseColor(r.Dose), note: `± ${fmt(r.Eficiencia_dp, 1)} entre blocos` })) }),
+    { columns: ["Producao", "Dose", "Eficiencia_media", "Eficiencia_dp"], rows: N.filter((r) => r.Tipo.startsWith("eficiência")), formats: { Eficiencia_media: 1, Eficiencia_dp: 1 } });
+  txt("ex-3-text", `Eficiência agronômica = (massa seca da parcela − massa da parcela sem N do mesmo bloco) ÷ dose de N. O retorno marginal compara doses vizinhas: `
+    + marg.map((r) => `de ${r.De} para ${r.Para} kg, ${fmt(r.Retorno_marginal_kg_MS_por_kg_N, 1)} kg por kg de N`).join("; ")
+    + `. A queda da eficiência com a dose não é significativa com 3 blocos (${pv(N[0].p_dose_eficiencia)}), mas acompanha o resultado anterior: a produção satura por volta de 50–75 kg.`);
+  table("ex-3-table", ["Producao", "De", "Para", "Retorno_marginal_kg_MS_por_kg_N"], N.filter((r) => r.Tipo.startsWith("retorno")),
+    { formats: { Retorno_marginal_kg_MS_por_kg_N: 1 }, labels: { Producao: "produção", Retorno_marginal_kg_MS_por_kg_N: "kg de massa por kg de N" } });
+
+  // 4. uniformidade da altura
+  const H = E.height_uniformity, hcv = H.find((r) => r.Medida === "Altura_CV"), hx = H.find((r) => r.Medida === "Altura_CV_x_foto");
+  const hv = [hcv.Media_0kg, hcv.Media_50kg, hcv.Media_75kg, hcv.Media_100kg];
+  plain.push(`A altura varia dentro da parcela (CV médio de ${fmt(Math.min(...hv), 0)} a ${fmt(Math.max(...hv), 0)}% entre as 5 medidas, conforme a dose), mas sem relação com o adubo e sem relação com as manchas de cor da foto. A desuniformidade de cor não vem de plantas mais altas e mais baixas.`);
+  txt("ex-4-text", `CV das 5 alturas medidas em cada parcela (26/05): não muda com a dose (${pv(hcv.p_dose)}) e não se relaciona com a variação de cor da foto (Spearman ${fmt(hx.rho_dose, 2)}, ${pv(hx.p_rho_dose)}).`);
+  table("ex-4-table", ["Rotulo", "Media_0kg", "Media_50kg", "Media_75kg", "Media_100kg", "rho_dose", "p_rho_dose"], H,
+    { formats: { Media_0kg: 1, Media_50kg: 1, Media_75kg: 1, Media_100kg: 1, rho_dose: 2, p_rho_dose: "p" },
+      labels: { Rotulo: "medida", Media_0kg: "0 kg", Media_50kg: "50 kg", Media_75kg: "75 kg", Media_100kg: "100 kg", rho_dose: "Spearman", p_rho_dose: "p" } });
+
+  // 5. cor da folha × cor da luz
+  const D = E.color_directions, dv = (s) => D.find((r) => r.Item.startsWith(s));
+  const vS = dv("Variância da cor explicada só pelo SPAD").Norma, vD = dv("Variância da cor explicada só pela data").Norma, ang = dv("Direção principal da luz").Angulo_com_clorofila_graus;
+  const C = E.color_correction.filter((r) => r.Modelo), cb = C.find((r) => r.Modelo.startsWith("Cor bruta")), co = C.find((r) => r.Modelo.startsWith("Componente"));
+  const lights = D.filter((r) => r.Data);
+  plain.push(`A luz de cada dia muda a cor da foto quase tanto quanto a clorofila (${pct(vD)} contra ${pct(vS)} da variação de cor) e numa direção parecida (~${fmt(ang, 0)}°). Por isso parte da mudança de luz "parece" clorofila, e o modelo erra o nível de cada data. Com só 3 datas não deu para corrigir.`);
+  registerChart("ex-5-chart", () => scatter($("#ex-5-chart", view), {
+    points: E.color_points.map((p) => ({ x: p.x_r_menos_b, y: p.y_2g_menos_r_b, color: dateColor(p.Data), label: `parcela ${p.Ponto} · ${shortDate(p.Data)} · ${p.Dose} kg`, id: String(p.Ponto),
+      tip: [{ value: fmt(p.SPAD, 1), label: "SPAD" }] })),
+    xLabel: "r − b (mais vermelho →)", yLabel: "2g − r − b (mais verde ↑)", height: 360, onClick: (p) => goPlot(p.id), xFmt: (v) => fmt(v, 2), yFmt: (v) => fmt(v, 2),
+    legendItems: DATES.map((d) => ({ name: shortDate(d), color: dateColor(d) })),
+  }), { columns: ["Data", "Ponto", "Dose", "SPAD", "x_r_menos_b", "y_2g_menos_r_b"], rows: E.color_points, formats: { SPAD: 1, x_r_menos_b: 4, y_2g_menos_r_b: 4 } });
+  txt("ex-5-text", `Cada foto vira um ponto no plano de cor (sem o brilho). Dentro de uma mesma data, parcelas com mais clorofila vão numa direção; de uma data para outra, a luz empurra `
+    + `todas as fotos juntas noutra direção. A data explica ${pct(vD)} da variação de cor e o SPAD, ${pct(vS)}. As duas direções formam ~${fmt(ang, 0)}°: `
+    + `a mudança de luz tem uma parte que se confunde com clorofila — `
+    + lights.map((r) => `em ${shortDate(r.Data)}, equivalente a ${fmt(r.Parece_clorofila_SPAD_equiv, "+")} SPAD`).join("; ")
+    + `. Tentou-se usar só a componente da cor perpendicular à luz: o R² numa data nova caiu de ${fmt(cb.R2_data_nova, 2)} para ${fmt(co.R2_data_nova, 2)}. Com duas datas de treino, `
+    + `a direção da luz é mal estimada (variou de ${fmt(Math.min(...E.color_correction.filter((r) => r.Data_testada).map((r) => r.Angulo_luz_clorofila_no_treino)), 0)}° a `
+    + `${fmt(Math.max(...E.color_correction.filter((r) => r.Data_testada).map((r) => r.Angulo_luz_clorofila_no_treino)), 0)}°). Um cartão de cor na foto mediria essa direção diretamente.`);
+  table("ex-5-table", ["Modelo", "R2_data_nova", "MAE", "Classe_exata", "Vies_18-05", "Vies_21-05", "Vies_26-05"], C.map((r) => ({ ...r, Classe_exata: r.Classe_exata * 100 })),
+    { formats: { R2_data_nova: 2, MAE: 2, Classe_exata: 0, "Vies_18-05": 1, "Vies_21-05": 1, "Vies_26-05": 1 },
+      labels: { Modelo: "entrada", R2_data_nova: "R² na data nova", MAE: "erro médio", Classe_exata: "classe exata (%)", "Vies_18-05": "viés 18/05", "Vies_21-05": "viés 21/05", "Vies_26-05": "viés 26/05" } });
+
+  // 6. dossel × folha
+  const K = E.canopy_leaf, kb = (y, m) => K.find((r) => r.Producao === y && r.Medida_foto.includes(m));
+  const tot = kb("Massa seca total", "b/r"), totC = kb("Massa seca total", "cobertura"), fol = kb("Massa seca de folha", "b/r"), alt = kb("Altura média", "b/r");
+  plain.push(`Para a produção, a foto ganha do Falker (R² ${fmt(tot.R2_foto, 2)} contra ${fmt(tot.R2_SPAD, 2)} na massa total), porque vê o dossel inteiro, inclusive o quanto ele está fechado. Para a altura é o contrário: o Falker explica ${pct(alt.R2_SPAD)} e a foto não acrescenta nada.`);
+  const items = [];
+  for (const [y, yl] of [["Massa seca total", "massa total"], ["Massa seca de folha", "massa de folha"], ["Altura média", "altura"]]) {
+    const b = kb(y, "b/r"), c = kb(y, "cobertura");
+    items.push({ label: `${yl}: Falker`, value: b.R2_SPAD, color: css("--ink") }, { label: `${yl}: foto (b/r)`, value: b.R2_foto, color: css("--series-1") },
+      { label: `${yl}: Falker + cobertura`, value: c.R2_juntos, color: css("--series-3") });
+  }
+  registerChart("ex-6-chart", () => hbar($("#ex-6-chart", view), { xLabel: "R² (26/05, 12 parcelas)", valueFmt: (v) => fmt(v, 2), items }),
+    { columns: ["Producao", "Medida_foto", "R2_SPAD", "R2_foto", "R2_juntos", "Parcial_foto_descontando_SPAD", "p_foto"], rows: K, formats: { R2_SPAD: 2, R2_foto: 2, R2_juntos: 2, Parcial_foto_descontando_SPAD: 2, p_foto: "p" } });
+  txt("ex-6-text", `O Falker mede a clorofila de uma folha; a foto vê o dossel. Com a foto no modelo, o SPAD não acrescenta nada à massa (correlação parcial ${fmt(tot.Parcial_SPAD_descontando_foto, 2)}). `
+    + `A cobertura vegetal, que é estrutura pura, sem cor, traz o que o Falker não tem: somada ao SPAD, explica ${pct(totC.R2_juntos)} da massa total (parcial ${fmt(totC.Parcial_foto_descontando_SPAD, 2)}, ${pv(totC.p_foto)}). `
+    + `Na altura, o SPAD explica ${pct(alt.R2_SPAD)} e continua importante mesmo descontando a foto (parcial ${fmt(alt.Parcial_SPAD_descontando_foto, 2)}, ${pv(alt.p_SPAD)}). Resumindo: a folha fala da altura; o dossel, da massa.`);
+  table("ex-6-table", ["Producao", "Medida_foto", "R2_SPAD", "R2_foto", "R2_juntos", "Parcial_foto_descontando_SPAD", "p_foto", "Parcial_SPAD_descontando_foto", "p_SPAD"], K,
+    { formats: { R2_SPAD: 2, R2_foto: 2, R2_juntos: 2, Parcial_foto_descontando_SPAD: 2, p_foto: "p", Parcial_SPAD_descontando_foto: 2, p_SPAD: "p" },
+      labels: { Producao: "produção", Medida_foto: "medida da foto", R2_SPAD: "R² Falker", R2_foto: "R² foto", R2_juntos: "R² juntos", Parcial_foto_descontando_SPAD: "parcial foto | SPAD", p_foto: "p", Parcial_SPAD_descontando_foto: "parcial SPAD | foto", p_SPAD: "p" } });
+
+  // 7. manchas
+  const PT = E.patch_tests, pm = PT.find((r) => r.Medida === "Mancha_tamanho_ponderado"), pl = PT.find((r) => r.Medida === "Comprimento_correlacao_blocos");
+  const CG = E.patch_correlogram, cg = (dose, lag) => CG.find((r) => r.Dose === dose && r.Lag_blocos === lag)?.mean;
+  plain.push(`A variação de cor é bem fina: some em pouco mais de 1 bloco de 10 pixels, na escala de uma folha. Sem adubo, o amarelado aparece "salpicado" por toda a parcela; com adubo, a parcela é verde e o que varia são estruturas maiores (sombra e densidade do capim).`);
+  registerChart("ex-7-chart", () => lineChart($("#ex-7-chart", view), {
+    series: doses.map((d) => ({ name: `${d} kg`, color: doseColor(d), points: CG.filter((r) => r.Dose === d).map((r) => ({ x: r.Lag_blocos, y: r.mean })) })),
+    xTicks: [1, 2, 4, 8, 16, 32], xLabel: "distância entre blocos (em blocos de 10 px)", yLabel: "correlação da cor (b/r)", height: 300,
+  }), { columns: ["Dose", "Lag_blocos", "mean", "std", "count"], rows: CG, formats: { mean: 3, std: 3 } });
+  txt("ex-7-text", `Correlação da cor (b/r) entre blocos a distâncias crescentes, média por dose. A correlação cai pela metade em ~${fmt(pl.Media_0kg, 1)}–${fmt(pl.Media_100kg, 1)} blocos em todas as doses. `
+    + `A diferença está longe: a 8 blocos, a correlação é ${fmt(cg(0, 8), 2)} sem N e ${fmt(cg(100, 8), 2)} com 100 kg. E as manchas "menos verdes" de cada foto (o quinto mais baixo de b/r) `
+    + `são pequenas e espalhadas sem N (tamanho típico ${fmt(pm.Media_0kg, 0)} blocos) e maiores com 100 kg (${fmt(pm.Media_100kg, 0)}; Spearman com a dose ${fmt(pm.rho_dose, 2)}, ${pv(pm.p_rho_dose)}).`);
+  table("ex-7-table", ["Rotulo", "Media_0kg", "Media_50kg", "Media_75kg", "Media_100kg", "rho_dose", "p_rho_dose"], PT,
+    { formats: { Media_0kg: 2, Media_50kg: 2, Media_75kg: 2, Media_100kg: 2, rho_dose: 2, p_rho_dose: "p" },
+      labels: { Rotulo: "medida", Media_0kg: "0 kg", Media_50kg: "50 kg", Media_75kg: "75 kg", Media_100kg: "100 kg", rho_dose: "Spearman com a dose", p_rho_dose: "p" } });
+
+  // 8. gradiente do terreno
+  const G = E.field_gradient, gm = G.find((r) => r.Escopo === "Média das datas"), FP = E.field_positions;
+  plain.push(`Não: o SPAD não aumenta nem diminui de um lado para o outro do terreno, e parcelas vizinhas não se parecem mais entre si do que parcelas distantes. O campo é homogêneo, e as diferenças vêm do adubo.`);
+  registerChart("ex-8-chart", () => scatter($("#ex-8-chart", view), {
+    points: FP.map((p) => ({ x: p.x_m, y: p.y_m, color: p.Resid >= 0 ? css("--series-1") : css("--series-2"), label: `parcela ${p.Ponto} (${p.Dose} kg, ${p.Bloco})`, id: String(p.Ponto), mark: `P${p.Ponto}`,
+      tip: [{ value: fmt(p.Resid, "+"), label: "SPAD acima/abaixo do esperado pela dose" }] })),
+    xLabel: "leste (m)", yLabel: "norte (m)", height: 340, onClick: (p) => goPlot(p.id),
+    legendItems: [{ name: "acima do esperado pela dose", color: css("--series-1") }, { name: "abaixo", color: css("--series-2") }],
+  }), { columns: ["Ponto", "Bloco", "Dose", "x_m", "y_m", "Resid"], rows: FP, formats: { x_m: 1, y_m: 1, Resid: 2 } });
+  txt("ex-8-text", `Posição de cada parcela = mediana do GPS das suas leituras (dispersão dentro da parcela ~${fmt(FP[0].Dispersao_GPS_m, 1)} m). Cor = SPAD acima ou abaixo do esperado pela dose, na média das datas. `
+    + `Tendência para leste: ${fmt(gm.Inclinacao_leste_SPAD_por_10m, "+")} SPAD a cada 10 m (${pv(gm.p_leste)}); para norte: ${fmt(gm.Inclinacao_norte_SPAD_por_10m, "+")} (${pv(gm.p_norte)}). `
+    + `I de Moran ${fmt(gm.Moran_I, 2)} (${pv(gm.p_Moran)}): sem agrupamento espacial. Nenhuma data mostrou gradiente significativo.`);
+  table("ex-8-table", ["Escopo", "Inclinacao_leste_SPAD_por_10m", "p_leste", "Inclinacao_norte_SPAD_por_10m", "p_norte", "Moran_I", "p_Moran"], G.map((r) => ({ ...r, Escopo: r.Escopo.includes("-") ? shortDate(r.Escopo) : r.Escopo })),
+    { formats: { Inclinacao_leste_SPAD_por_10m: 2, p_leste: "p", Inclinacao_norte_SPAD_por_10m: 2, p_norte: "p", Moran_I: 2, p_Moran: "p" },
+      labels: { Escopo: "dados", Inclinacao_leste_SPAD_por_10m: "leste (SPAD/10 m)", p_leste: "p", Inclinacao_norte_SPAD_por_10m: "norte (SPAD/10 m)", p_norte: "p", Moran_I: "I de Moran", p_Moran: "p" } });
+
+  // 9. distribuição das leituras
+  const R = E.reading_shape, rAll = R[0], MM = E.reading_mean_median.filter((r) => r.Nivel !== "ponto"), m7 = MM.find((r) => r.Leituras === 7);
+  plain.push(`As leituras de uma parcela se espalham por igual para cima e para baixo: não há folhas muito amarelas puxando a média. Leituras muito fora são raras (${fmt(rAll.Discrepantes_pct, 0)}%). A média funciona melhor que a mediana (erra ±${fmt(m7.EP_media, 1)} contra ±${fmt(m7.EP_mediana, 1)} com 7 leituras).`);
+  txt("ex-9-text", `Juntando os desvios das 252 leituras em relação à média da sua parcela: assimetria ${fmt(rAll.Assimetria, 2)} (0 = simétrica). A distribuição é mais "achatada" que a normal `
+    + `(curtose ${fmt(rAll.Curtose_excesso, 2)}): as folhas variam bastante, sem concentrar perto da média (com 7 leituras por parcela, essa medida é aproximada). ${rAll.Discrepantes_abaixo} leituras discrepantes abaixo e ${rAll.Discrepantes_acima} acima. `
+    + `Nos pontos de teste (20 leituras cada), reamostrando 5, 7 ou 10 leituras, a média sempre varia menos que a mediana.`);
+  table("ex-9-table", ["Leituras", "EP_media", "EP_mediana", "Erro_medio_media_vs_20", "Erro_medio_mediana_vs_20"], MM,
+    { formats: { EP_media: 2, EP_mediana: 2, Erro_medio_media_vs_20: 2, Erro_medio_mediana_vs_20: 2 },
+      labels: { Leituras: "leituras", EP_media: "variação da média", EP_mediana: "variação da mediana", Erro_medio_media_vs_20: "erro da média (vs. 20 leituras)", Erro_medio_mediana_vs_20: "erro da mediana" } });
+
+  // 10. ordem e horário
+  const O = E.order_time, oa = (s) => O.find((r) => r.Analise.startsWith(s));
+  const oOrd = oa("Falker: posição"), oSes = oa("Falker (3 datas)"), oL = oa("Foto (3 datas): resíduo de luminosidade"), oBR = oa("Foto (3 datas): resíduo de b/r");
+  const dur = O.filter((r) => r.Analise.startsWith("Foto") && r.Duracao_sessao_min).map((r) => r.Duracao_sessao_min);
+  plain.push(`O Falker não "anda": a 1ª e a 7ª folha dão o mesmo em média, e o horário não muda nada. As fotos de cada dia levaram só ${fmt(Math.min(...dur), 0)}–${fmt(Math.max(...dur), 0)} minutos, e mesmo assim o brilho mudou. Mas os índices de cor não mudaram: tirar o brilho da conta protege a análise.`);
+  const SP = E.session_points.filter((r) => r.Tipo.startsWith("Foto"));
+  registerChart("ex-10-chart", () => scatter($("#ex-10-chart", view), {
+    points: SP.map((p) => ({ x: p.x, y: p.y, color: p.Tipo.includes("lumin") ? css("--series-2") : css("--series-1"), label: `${p.Tipo} · parcela ${p.Ponto} · ${shortDate(p.Data)}` })),
+    xLabel: "minutos desde a primeira foto do dia", yLabel: "resíduo padronizado (descontado o SPAD)", height: 320, xFmt: (v) => fmt(v, 1),
+    refLines: [{ value: 0, dash: false }],
+    legendItems: [{ name: "brilho (L)", color: css("--series-2") }, { name: "cor (b/r)", color: css("--series-1") }],
+  }), { columns: ["Tipo", "Data", "Ponto", "x", "y"], rows: SP, formats: { x: 2, y: 2 } });
+  txt("ex-10-text", `Falker: a posição da leitura na parcela não muda o valor (${pv(oOrd.p)}), e o resíduo das parcelas não anda ao longo da sessão (${pv(oSes.p)}). `
+    + `Fotos: descontado o SPAD real, o brilho (L) cai ao longo dos poucos minutos de cada sessão (Spearman ${fmt(oL.rho, 2)}, ${pv(oL.p)}), provavelmente por nuvem ou mudança do sol; `
+    + `a cor (b/r) não (${pv(oBR.p)}). As coordenadas cromáticas, que dividem cada canal pela soma dos três, cancelam variações de brilho; o que atrapalha entre datas é a mudança na cor da luz.`);
+  table("ex-10-table", ["Analise", "n", "Efeito", "Unidade", "rho", "p"], O,
+    { formats: { Efeito: 2, rho: 2, p: "p" }, labels: { Analise: "análise", Efeito: "efeito", Unidade: "unidade", rho: "Spearman" } });
+
+  // em poucas palavras
+  const titles = $$("section.part[id^='ex-'] h2", view).filter((h2) => h2.closest("section").id !== "ex-plain").map((h2) => h2.textContent);
+  $("#ex-plain-grid", view).replaceChildren(...plain.map((a, i) => h("button", {
+    type: "button", class: "plain-card", onclick: () => $(`#ex-${i + 1}`, view).scrollIntoView({ behavior: "smooth" }) },
+    h("span", { class: "plain-q" }, titles[i]), h("span", { class: "plain-a" }, a), h("span", { class: "plain-more" }, "ver os detalhes ↓"))));
+  plain.forEach((a, i) => $(`#ex-${i + 1}-plain`, view).replaceChildren(h("strong", {}, "Em resumo: "), a));
+};

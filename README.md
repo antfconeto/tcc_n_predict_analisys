@@ -209,6 +209,21 @@ Scripts em `pipeline/07_analises_complementares/`, tabelas `sci_*`, página **Ap
 | 7 | Dinâmica entre coletas (modelo misto) | O SPAD caiu 4–5,6 em 8 dias em todas as doses; sem interação dose × data (p = 0,14). Parcelas mais altas perderam menos: não é diluição. |
 | 8 | Planejamento | 29 leituras/parcela para ±1 SPAD; 28 leituras levam o teto de classe de 80 % a 89 %. Para detectar 25 kg N: 10 blocos com a foto × 25 com o Falker. |
 
+### Explorações (scripts 10–16, tabelas `ext_*`, página **Explorações**)
+
+| Pergunta | Resultado |
+| :--- | :--- |
+| Partição folha/colmo e matéria seca mudam com o N? | Não (p ≥ 0,29): o N aumentou a produção sem mudar a proporção de folha nem o teor de matéria seca. |
+| A clorofila satura antes da produção? | Ao contrário: com 50 kg a massa seca já tinha 97 % do ganho de 0 a 100 kg; o SPAD, 44 % (massa satura antes em 99 % das reamostragens). Padrão de consumo de luxo. |
+| Eficiência de uso do N | 27 → 19 → 14 kg de massa seca por kg de N (50, 75, 100 kg); de 75 para 100 kg, retorno ≈ 0. |
+| Uniformidade da altura | O CV das 5 alturas não muda com a dose nem acompanha as manchas de cor. |
+| Cor da folha × cor da luz | A data explica 34 % da variação de cor, o SPAD 56 %; direções a ~40°. Remover a direção da luz (estimada com 2 datas) piorou o R² (0,60 → 0,43): corrigir exige mais datas ou cartão de cor. |
+| O que a foto vê além da folha? | Para a massa, a foto supera o Falker (R² 0,56 × 0,47); a cobertura soma ao SPAD (R² 0,68). Para a altura, o SPAD domina (0,90). |
+| Escala das manchas | Variação de cor na escala da folha (~1 bloco de 10 px). Sem N o amarelado é salpicado; com N, estruturas maiores (ρ = 0,55 com a dose). |
+| Gradiente no terreno (GPS) | Nenhum: inclinações não significativas (p ≥ 0,13) e I de Moran ≈ 0. |
+| Distribuição das leituras | Simétrica (assimetria 0,03); 4 % discrepantes; a média varia menos que a mediana (±1,9 × ±2,2 com 7 leituras). |
+| Ordem e horário | O Falker não deriva; nas fotos o brilho muda em 2–3 min (ρ = −0,57), mas os índices cromáticos não. |
+
 ## Site estático (GitHub Pages)
 
 `python run.py build` gera em `dist/` uma versão do site que não precisa de servidor nem API: o próprio servidor é

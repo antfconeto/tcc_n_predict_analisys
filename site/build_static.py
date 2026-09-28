@@ -50,7 +50,7 @@ from tcc_analysis import config  # noqa: E402
 
 SIZES = {"sm": 640, "lg": 1280}
 JPEG_QUALITY = 80          # só no site estático, para caber bem no GitHub Pages
-SIMPLE_ROUTES = ["overview", "tables", "field", "outliers", "figures", "photos", "per_date", "vegetativo", "classes", "ciencia",
+SIMPLE_ROUTES = ["overview", "tables", "field", "outliers", "figures", "photos", "per_date", "vegetativo", "classes", "ciencia", "exploracoes",
                  "maps", "reports", "runs", "downloads"]
 
 

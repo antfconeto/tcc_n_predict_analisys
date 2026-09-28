@@ -46,8 +46,12 @@ def _hetero_row(indices, mask):
     return row
 
 
-def extract_photo_units(tiles: int = 3, block_size: int = 10, min_veg_blocks: int = 30) -> pd.DataFrame:
-    """Uma linha por foto (Recorte = -1, com a heterogeneidade entre blocos) e uma por recorte (0..tiles²-1)."""
+def extract_photo_units(tiles: int = 3, block_size: int = 10, min_veg_blocks: int = 30, image_transform=None) -> pd.DataFrame:
+    """Uma linha por foto (Recorte = -1, com a heterogeneidade entre blocos) e uma por recorte (0..tiles²-1).
+
+    image_transform: função opcional aplicada à imagem BGR (uint8) antes do pré-processamento (ex.: Retinex).
+    tiles = 0: só a foto inteira.
+    """
     pp = merge_preprocess_config(config.BEST_PREPROCESS_CONFIG)
     root = str(config.IMAGE_ROOT)
     rows = []
@@ -60,6 +64,8 @@ def extract_photo_units(tiles: int = 3, block_size: int = 10, min_veg_blocks: in
             img = cv2.imread(os.path.join(root, folder, fn))
             if img is None:
                 continue
+            if image_transform is not None:
+                img = image_transform(img)
             f, _ = preprocess_image(img, pp)
             h, w, _ = f.shape
             nh, nw = h // block_size, w // block_size

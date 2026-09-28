@@ -808,7 +808,7 @@ def download_category(name: str) -> str:
         return "Análise por coleta"
     if name.startswith("chl_class_"):
         return "Classes de clorofila"
-    if name.startswith("sci_"):
+    if name.startswith(("sci_", "ext_")):
         return "Análises complementares"
     if name.startswith("anova"):
         return "ANOVA"
@@ -879,4 +879,18 @@ def science() -> dict:
     lim = try_latest("chl_class_scheme")
     out["class_limits"] = [] if lim is None else [_clean(v) for v in lim.sort_values("Ordem").SPAD_max.dropna().tolist()]
     out["references"] = SCIENCE_REFERENCES
+    return out
+
+
+EXPLORATION_TABLES = ["partition", "saturation", "nue", "height_uniformity", "biomass_plots", "color_directions", "color_points",
+                      "color_correction", "canopy_leaf", "patch_tests", "patch_correlogram", "field_positions", "field_gradient",
+                      "reading_shape", "reading_mean_median", "order_time", "session_points"]
+
+
+def explorations() -> dict:
+    """Explorações (scripts 10–16 de pipeline/07_analises_complementares)."""
+    out = {}
+    for name in EXPLORATION_TABLES:
+        df = try_latest(f"ext_{name}")
+        out[name] = [] if df is None else [{k: _clean(v) for k, v in r.items()} for r in df.to_dict("records")]
     return out

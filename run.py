@@ -80,6 +80,13 @@ STEPS = [
     ("sci_heterogeneity", "07_analises_complementares/07_heterogeneity.py", "Heterogeneidade dentro da parcela"),
     ("sci_temporal", "07_analises_complementares/08_temporal.py", "Dinâmica entre as datas (modelo misto)"),
     ("sci_planning", "07_analises_complementares/09_planning.py", "Planejamento da próxima coleta"),
+    ("ext_biomass", "07_analises_complementares/10_biomass_nitrogen.py", "Partição, saturação, eficiência do N e uniformidade da altura"),
+    ("ext_color", "07_analises_complementares/11_color_space.py", "Cor da folha × cor da luz no espaço cromático"),
+    ("ext_canopy", "07_analises_complementares/12_canopy_vs_leaf.py", "Foto do dossel × leitura da folha para a produção"),
+    ("ext_patches", "07_analises_complementares/13_patch_scale.py", "Escala das manchas de cor (correlograma)"),
+    ("ext_gradient", "07_analises_complementares/14_field_gradient.py", "Gradiente espacial do SPAD (GPS)"),
+    ("ext_readings", "07_analises_complementares/15_reading_distribution.py", "Distribuição das leituras do Falker; média × mediana"),
+    ("ext_order_time", "07_analises_complementares/16_order_time.py", "Ordem das leituras e horário na sessão"),
     # Exploratórios: buscas de hiperparâmetros/alternativas que não entraram no modelo final.
     # Não fazem parte de `all`; os resultados da execução original estão em legacy__*.
     ("preprocess_search", "exploratorio/01_preprocess_search.py", "[exp] Busca de pré-processamento (36 variantes)"),
@@ -93,6 +100,7 @@ STEPS = [
     ("match_debug_export", "exploratorio/09_match_debug_export.py", "[exp] Reidentifica parcelas no JSON do app (v1)"),
     ("illumination_study", "exploratorio/10_illumination_study.py", "[exp] Correções de luz/cor e o artefato de Mean_rgb"),
     ("mlp_class_search", "exploratorio/11_mlp_class_search.py", "[exp] Busca de MLP para as classes de clorofila (aninhada)"),
+    ("color_var_combos", "exploratorio/12_color_variation_combos.py", "[exp] Variação de cor combinada com índices (não generaliza)"),
 ]
 EXPLORATORY = [alias for alias, script, _ in STEPS if script.startswith("exploratorio/")]
 GROUPS = {

@@ -24,6 +24,7 @@ Rotas da API (todas leem o banco no momento da requisição, somente leitura):
   GET /api/per_date                     análise dentro de cada coleta (resumo, ANOVA, pontos, consistência)
   GET /api/classes                      classes de clorofila (faixas de Beaufils): esquema, parcelas, concordância
   GET /api/ciencia                      análises complementares (repetibilidade, Bland-Altman, dose ótima, …)
+  GET /api/exploracoes                  explorações (fisiologia, cor × luz, dossel, manchas, campo, leituras, horário)
   GET /api/vegetativo                   índices × altura e biomassa e busca de MLP
   GET /api/photos                       catálogo das fotos com diagnósticos
   GET /photo/<caminho>?w=640            miniatura da foto original (cache em outputs/cache)
@@ -241,6 +242,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_json(queries.chl_classes())
         if route == "ciencia":
             return self.send_json(queries.science())
+        if route == "exploracoes":
+            return self.send_json(queries.explorations())
         if route == "vegetativo":
             return self.send_json(queries.vegetative())
         if route == "figures":

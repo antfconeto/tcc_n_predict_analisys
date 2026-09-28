@@ -631,6 +631,7 @@ const PAGES = [
   { id: "analise", title: "Análise" },
   { id: "vegetativo", title: "Altura e massa" },
   { id: "ciencia", title: "Aprofundamento" },
+  { id: "exploracoes", title: "Explorações" },
   { id: "outliers", title: "Outliers" },
   { id: "imagens", title: "Imagens" },
   { id: "dados", title: "Dados" },

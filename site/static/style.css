@@ -62,15 +62,15 @@ button { font: inherit; color: inherit; }
 
 /* ── cabeçalho ──────────────────────────────────────────────────────────── */
 .masthead { border-bottom: 1px solid var(--rule); background: var(--paper); position: sticky; top: 0; z-index: 30; }
-.masthead-inner { max-width: var(--wide); margin: 0 auto; padding: 14px 28px; display: flex; align-items: baseline; gap: 28px; }
+.masthead-inner { max-width: var(--wide); margin: 0 auto; padding: 14px 28px 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 28px; }
 .site-title { font-family: var(--serif); font-size: 19px; color: var(--ink); text-decoration: none; white-space: nowrap; }
 .site-title span { color: var(--ink-3); font-family: var(--sans); font-size: 13px; margin-left: 8px; }
-.nav { display: flex; gap: 22px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.nav { display: flex; gap: 22px; order: 3; flex-basis: 100%; overflow-x: auto; scrollbar-width: none; padding-top: 2px; }
 .nav::-webkit-scrollbar { display: none; }
 .nav a { color: var(--ink-2); text-decoration: none; font-size: 14.5px; padding-bottom: 4px; border-bottom: 1px solid transparent; white-space: nowrap; }
 .nav a:hover { color: var(--ink); }
 .nav a.on { color: var(--ink); border-bottom-color: var(--ink); }
-.theme { background: none; border: 0; color: var(--ink-3); font-size: 13px; cursor: pointer; padding: 0; white-space: nowrap; }
+.theme { margin-left: auto; background: none; border: 0; color: var(--ink-3); font-size: 13px; cursor: pointer; padding: 0; white-space: nowrap; }
 .theme:hover { color: var(--ink); }
 
 /* ── página ─────────────────────────────────────────────────────────────── */
